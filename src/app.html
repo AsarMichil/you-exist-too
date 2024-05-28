@@ -1,4 +1,13 @@
 <!doctype html>
+<script>
+	if (!sessionStorage.getItem('theme')) {
+		document.documentElement.classList.add(
+			window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+		);
+	} else {
+		document.documentElement.classList.add(sessionStorage.getItem('theme'));
+	}
+</script>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -6,7 +15,11 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
+	<body data-sveltekit-preload-data="hover" class="dark:bg-stone-900">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>
 </html>
+
+<style>
+	@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+</style>
