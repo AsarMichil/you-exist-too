@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { db } from '$lib/server/db';
 import type { Person, PersonWithId } from '$lib/server/db/types';
 import { nanoid } from 'nanoid';
-import { invalidate } from '$app/navigation';
+
 export const load: PageServerLoad = async ({ params }) => {
 	const { data, error } = await db.getPersonByUsername(params.username);
 	error && console.error(error);
