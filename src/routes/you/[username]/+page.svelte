@@ -5,19 +5,15 @@
 	import type { PageData } from './$types';
 	import { scale } from 'svelte/transition';
 	import ProfileModal from './ProfileModal.svelte';
+	import ICanada from '$lib/icons/I_Canada.svelte';
+	import FlagIcon from '$lib/components/FlagIcon.svelte';
+	import IUs from '$lib/icons/I_US.svelte';
 	let url = $page.url.pathname;
 	console.log(url);
-	let { data, form } = $props();
-	let mock1 = {
-		props: {
-			person: {
-				preferred_name: 'John',
-				given_name: 'Doe',
-				family_name: 'Smith',
-				email: 'pacer@asarmichil.com'
-			}
-		}
-	};
+	let { data, form }: { data: PageData; form: FormData } = $props();
+	// let userId = $derived(data.props.user.id);
+	// console.log(userId);
+	let person = $derived(data.props?.person);
 	let uploading = $state(false);
 	let editing = $state(false);
 	let profile_photo = $state(false);
@@ -44,20 +40,22 @@
 	</div>
 {/if}
 
-<ProfileModal bind:toggled={profile_photo} form={form}></ProfileModal>
+<ProfileModal bind:toggled={profile_photo} {form}></ProfileModal>
 
 <div class="text-column">
 	Your account {url.split('/')[2]}
-	<!-- {JSON.stringify(data.props?.person)} -->
+	<!-- {JSON.stringify(person?)} -->
 </div>
-
 <div class="flex flex-col w-full h-full dark:text-white">
-	<h1 class="mx-auto text-center font-gar text-5xl mt-20 mb-6">
-		{mock1.props?.person.preferred_name || mock1.props?.person.given_name}
-		{mock1.props?.person.family_name}
+	<h1 class="inline-flex gap-2 items-center mx-auto text-center font-gar text-5xl mt-20 mb-6">
+		{person?.preferred_name ?? person?.given_name}
+		{#if person?.family_name}
+			{person?.family_name}
+		{/if}
+		<FlagIcon country={person?.country} />
 	</h1>
 	<div
-		class="rounded xs:border xs:border-slate-700 dark:xs:border-white px-4 pb-4 mb-5 max-w-96 mx-auto w-full"
+		class="rounded xs:border xs:border-slate-700 dark:xs:border-white p-6 mb-5 max-w-lg mx-auto xs:w-9/12"
 	>
 		<div>
 			<img
@@ -67,23 +65,28 @@
 			/>
 		</div>
 
-		<h2 class="mx-auto text-center font-mont mt-4 mb-2">Hehe</h2>
-		<button
-			class="border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
-			onclick={() => {
-				editing = true;
-			}}
-		>
-			Edit Profile
-		</button>
-		<button
-			class="border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
-			onclick={() => {
-				profile_photo = true;
-			}}
-		>
-			Profile Photo
-		</button>
+		<h2 class="mx-auto font-mont mt-4 mb-2 w-9/12">
+			{person?.blurb}
+		</h2>
+		<div></div>
+		{#if data.props?.own}
+			<button
+				class="border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
+				onclick={() => {
+					editing = true;
+				}}
+			>
+				Edit Profile
+			</button>
+			<button
+				class="border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
+				onclick={() => {
+					profile_photo = true;
+				}}
+			>
+				Profile Photo
+			</button>
+		{/if}
 	</div>
 
 	<!-- <div class="text-center mb-5 max-w-96 mx-auto">Or</div>

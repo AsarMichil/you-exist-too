@@ -4,27 +4,35 @@ import { db } from '$lib/server/db';
 import type { Person, PersonWithId } from '$lib/server/db/types';
 import { nanoid } from 'nanoid';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals: { safeGetSession } }) => {
 	const { data, error } = await db.getPersonByUsername(params.username);
-	error && console.error(error);
-	if (data) {
-		// console.log('data', data);
+	const { user } = await safeGetSession();
+	console.log('ree user', user);
 
-		const { id, ...person } = data[0] as PersonWithId;
-		let profile_photo_uri = '';
-		if (person.profile_photo_id) {
-			profile_photo_uri = db.getProfilePhotoById(person.profile_photo_id) + '.jpeg';
-		}
-		// profile_photo_uri = 'https://d1deenjh0g4q0v.cloudfront.net/ebtsDFGw5MnD0MDz6wDo2.jpeg';
-		console.log('profile_photo_uri', profile_photo_uri);
-		return {
-			props: {
-				person: person as Person,
-				profile_photo_uri: profile_photo_uri
-			}
-		};
+	if (error) {
+		console.error(error);
+		return fail(500, { error: error });
 	}
-	return fail(404, { message: 'Person not found' });
+	if (!data) {
+		return fail(404, { message: 'Person not found' });
+	}
+	console.log('data', data);
+
+	const { ...person } = data[0] as PersonWithId;
+	let profile_photo_uri = '';
+	if (person.profile_photo_id) {
+		profile_photo_uri = db.getProfilePhotoById(person.profile_photo_id) + '.jpeg';
+	}
+	// profile_photo_uri = 'https://d1deenjh0g4q0v.cloudfront.net/ebtsDFGw5MnD0MDz6wDo2.jpeg';
+	// const { data: user} =
+	console.log('profile_photo_uri', profile_photo_uri);
+	return {
+		props: {
+			person: person as Person,
+			profile_photo_uri: profile_photo_uri,
+			own: user?.id === person.id,
+		}
+	};
 };
 
 export const actions: Actions = {

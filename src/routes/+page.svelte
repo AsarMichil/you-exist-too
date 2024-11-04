@@ -17,7 +17,7 @@
 </script>
 
 <!-- F3ECE9 -->
-<div class="h-[calc(100vh-53px)] flex flex-col mx-6 dark:text-white">
+<section class="h-[calc(100vh-53px)] flex flex-col mx-6 dark:text-white">
 	<div class="flex flex-col h-5/6 items-center justify-center">
 		<!-- Center column -->
 		<div class="flex flex-col gap-3 mx-4">
@@ -45,7 +45,7 @@
 					</div>
 
 					<div class="mb-4">
-						<!-- svelte-ignore a11y-autofocus -->
+						<!-- svelte-ignore a11y_autofocus -->
 						<input
 							aria-label="Search who did you think about?"
 							autofocus
@@ -105,7 +105,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</section>
 
 {#if data.results.size > 0}
 	<div class="h-screen flex flex-col mx-6 dark:text-white" id="results">
