@@ -32,5 +32,10 @@
 			description="Photos from Gen's Halloween party."
 			photosLink="https://share.icloud.com/photos/076Ni976_XWrSf4Ov1sJpfanA"
 		/>
+		<PhotoBox
+			header="Paris, Lille, Brussels and Amsterdam"
+			description="Photos from part of my Europe trip."
+			photosLink="https://share.icloud.com/photos/0915O6X5eRv7j-gmNA-b97UHg"
+		/>
 	</article>
 </main>
