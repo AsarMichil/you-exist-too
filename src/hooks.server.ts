@@ -40,6 +40,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		} = await event.locals.supabase.auth.getSession();
 		return { session, user };
 	};
+	const ip: { ip: string } = { ip: event.getClientAddress() };
+	event.locals.supabase.from('logs').insert(ip);
 
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {
