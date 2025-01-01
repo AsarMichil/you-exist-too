@@ -1,4 +1,5 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { db } from '$lib/server/db';
 import { createServerClient } from '@supabase/ssr';
 import type { Handle } from '@sveltejs/kit';
 
@@ -41,7 +42,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return { session, user };
 	};
 	const ip: { ip: string } = { ip: event.getClientAddress() };
-	event.locals.supabase.from('logs').insert(ip);
+	// event.locals.supabase.from('logs').insert(ip);
+	db.logIp(ip.ip); //whatever yell at me
 
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {

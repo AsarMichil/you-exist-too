@@ -222,4 +222,7 @@ export class Database {
 			return { error: err, image_id: undefined };
 		}
 	}
+	public async logIp (ip: string) {
+		return await Database.client.from('logs').insert({ ip });
+	}
 }
