@@ -1,13 +1,14 @@
 <script lang="ts">
 	import Button from '$lib/components/Button.svelte';
 	import FormError from '$lib/components/FormError.svelte';
-	import type { ActionData } from './$types';
-	import StyledInput from '../../lib/components/StyledInput.svelte';
-	import I_Info from '../../lib/icons/I_Info.svelte';
+	import StyledTextarea from '$lib/components/StyledTextarea.svelte';
 	import IExCircle from '$lib/icons/I_ExCircle.svelte';
 	import IExTriangle from '$lib/icons/I_ExTriangle.svelte';
-	import StyledTextarea from '$lib/components/StyledTextarea.svelte';
+	import StyledInput from '../../lib/components/StyledInput.svelte';
+	import I_Info from '../../lib/icons/I_Info.svelte';
+	import type { ActionData } from './$types';
 	import CountrySelect from './CountrySelect.svelte';
+
 	let { form }: { form: ActionData } = $props();
 </script>
 
@@ -24,7 +25,7 @@
 					<StyledInput type="text" label="Family Name" name="family_name" labelClass="w-full" />
 				</div>
 				<StyledInput type="text" label="Preferred Name" class="w-full" name="preferred_name" />
-				
+
 				<StyledTextarea label="Blurb" class="" name="blurb" />
 				<CountrySelect class="" name="country" />
 				<FormError class="min-h-8" error={form?.error} prefixWith="Error: ">

@@ -1,9 +1,9 @@
 import { env } from '$env/dynamic/private';
 // import type { ExecutedQuery } from '@planetscale/database';
 import type { Person } from './types';
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@supabase/supabase-js';
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import sharp from 'sharp';
 
 const supabaseUrl = 'https://kyyeruyisvmpntjezwlw.supabase.co';
@@ -18,9 +18,9 @@ const cloudFrontUrl = 'https://d1deenjh0g4q0v.cloudfront.net';
 
 export class Database {
 	// private static connection: Connection;
-	private static instance: Database;
-	private static client: SupabaseClient;
-	private static s3Client: S3Client;
+	static instance: Database;
+	static client: SupabaseClient;
+	static s3Client: S3Client;
 
 	private constructor() {
 		// connect to database
@@ -41,14 +41,6 @@ export class Database {
 			Database.instance = new Database();
 		}
 		return Database.instance;
-	}
-
-	public static getClient() {
-		return Database.client;
-	}
-
-	public static getS3Client() {
-		return Database.s3Client;
 	}
 	// // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	// private static async query(sql: string, values: any): Promise<ExecutedQuery> {
@@ -118,18 +110,16 @@ export class Database {
 		const res = await Database.client.from('person').select('*').eq('username', username);
 		return res.data && res.data.length > 0;
 	}
-	public async insertShadowPerson(username: string, id: string) {
+	public async insertPersonEntry(username: string, id: string) {
 		username = username.toLowerCase();
 		return await Database.client.from('person').insert({ username: username, id: id });
 	}
 	public async getPersonEmail(username: string) {
 		username = username.toLowerCase();
 		const res = await Database.client.from('person').select('id').eq('username', username);
-		console.log('res', res);
 		if (!res.data || res.data.length === 0) {
 			return null;
 		}
-		console.log('res', res);
 		const { error, data } = await Database.client.auth.admin.getUserById(res.data![0].id);
 		if (error) {
 			return null;
@@ -185,8 +175,7 @@ export class Database {
 			Key: photo_id
 		});
 		try {
-			const res = await Database.s3Client.send(deleteObject);
-			console.log('res delete', photo_id, res);
+			await Database.s3Client.send(deleteObject);
 			const db_res = Database.client.from('person').update({ profile_photo_id: null }).eq('id', id);
 			return db_res;
 		} catch (err) {
@@ -204,10 +193,8 @@ export class Database {
 			Body: converted,
 			ACL: 'public-read'
 		});
-		console.log('putobject', putobject);
 		try {
-			const res = await Database.s3Client.send(putobject);
-			console.log('res upload', res);
+			await Database.s3Client.send(putobject);
 
 			const db_res = await Database.client
 				.from('person')
@@ -222,7 +209,23 @@ export class Database {
 			return { error: err, image_id: undefined };
 		}
 	}
-	public async logIp (ip: string) {
+	public async logIp(ip: string) {
 		return await Database.client.from('logs').insert({ ip });
+	}
+
+	public async vectorSearchPerson(query: string) {
+		return await Database.client.from('person').select('*').textSearch('search_vector', query);
+	}
+	public async searchPerson(query: string) {
+		return await Database.client.rpc('search_person', {
+			search_term: query,
+			is_autocomplete: false
+		});
+	}
+	public async searchAutocomplete(query: string) {
+		return await Database.client.rpc('search_person', {
+			search_term: query,
+			is_autocomplete: true
+		});
 	}
 }

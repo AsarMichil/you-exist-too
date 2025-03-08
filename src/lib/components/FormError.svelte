@@ -9,11 +9,10 @@
 		icon,
 		...other
 	}: HTMLAttributes<HTMLDivElement> & {
-		error?: string;
+		error?: string | undefined;
 		prefixWith?: string;
 		icon?: Snippet;
 	} = $props();
-	console.log(error);
 </script>
 
 {#if error}

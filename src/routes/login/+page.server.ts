@@ -1,7 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
-
 import type { Actions, PageServerLoad } from './$types';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	const { session } = await safeGetSession();
@@ -21,10 +20,7 @@ export const actions: Actions = {
 				message: 'Invalid username or password'
 			});
 		}
-		console.log('username', username);
-		console.log('password', password);
 		let email = await db.getPersonEmail(username);
-		console.log('email', email);
 		if (!email) {
 			email = 'na';
 		}
@@ -38,7 +34,6 @@ export const actions: Actions = {
 				message: 'Incorrect username or password'
 			});
 		}
-		console.log('existingUser', existingUser);
 		redirect(302, '/');
 	}
 };

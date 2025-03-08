@@ -1,6 +1,6 @@
-import { fail, redirect } from '@sveltejs/kit';
-import type { Actions } from './$types';
 import { db } from '$lib/server/db';
+import type { Actions } from './$types';
+import { fail, redirect } from '@sveltejs/kit';
 
 export const load = async ({ locals }) => {
 	const { supabase } = locals;
@@ -13,9 +13,7 @@ export const load = async ({ locals }) => {
 		// return { session: null, user: null };
 	}
 	const personData = await db.getPersonById(user!.id);
-	console.log('personData', personData);
 	if (!personData || personData.count == 0) {
-		console.log('No person data found! SHOULD NOT HAPPEN');
 		redirect(302, '/login');
 	}
 	return { username: personData.data![0].username };

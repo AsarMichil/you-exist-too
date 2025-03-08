@@ -1,15 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
-	import type { PageData } from './$types';
-	import { scale } from 'svelte/transition';
-	import ProfileModal from './ProfileModal.svelte';
-	import ICanada from '$lib/icons/I_Canada.svelte';
 	import FlagIcon from '$lib/components/FlagIcon.svelte';
+	import { flagEmoji } from '$lib/icons/FlagIcon';
+	import ICanada from '$lib/icons/I_Canada.svelte';
 	import IUs from '$lib/icons/I_US.svelte';
+	import type { PageData } from './$types';
+	import ProfileModal from './ProfileModal.svelte';
+	import { onMount } from 'svelte';
+	import { scale } from 'svelte/transition';
+
 	let url = $page.url.pathname;
-	console.log(url);
 	let { data, form }: { data: PageData; form: FormData } = $props();
 	// let userId = $derived(data.props.user.id);
 	// console.log(userId);
@@ -43,7 +44,7 @@
 <ProfileModal bind:toggled={profile_photo} {form}></ProfileModal>
 
 <div class="text-column">
-	Your account {url.split('/')[2]}
+	<!-- Your account {url.split('/')[2]} -->
 	<!-- {JSON.stringify(person?)} -->
 </div>
 <div class="flex flex-col w-full h-full dark:text-white">
@@ -52,7 +53,10 @@
 		{#if person?.family_name}
 			{person?.family_name}
 		{/if}
-		<FlagIcon country={person?.country} />
+		<!-- <FlagIcon country={person?.country} /> -->
+		{#if person?.country}
+			{flagEmoji(person?.country)}
+		{/if}
 	</h1>
 	<div
 		class="rounded xs:border xs:border-slate-700 dark:xs:border-white p-6 mb-5 max-w-lg mx-auto xs:w-9/12"

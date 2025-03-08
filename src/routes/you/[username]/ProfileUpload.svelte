@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	let { toggled = $bindable(), form } = $props();
 	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
+
+	let { toggled = $bindable(), form } = $props();
+
 	let uploading = $state(false);
 	let fileInput;
 	let canvas: HTMLCanvasElement;
@@ -17,10 +19,7 @@
 	onMount(() => {
 		ctx = canvas.getContext('2d');
 		canvasContainer = document.getElementById('az-canvas-container')!;
-		console.log('on mounting');
 		resizeCanvas();
-		console.log('ee ', canvasContainer, canvasContainer);
-		console.log('ee ', canvasContainer.clientWidth, canvasContainer.clientHeight);
 	});
 	let rendered = $state();
 	function renderImage() {

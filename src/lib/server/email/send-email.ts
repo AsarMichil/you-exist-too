@@ -4,8 +4,8 @@ import { env } from '$env/dynamic/private';
 const resend = new Resend(env.RESEND_ONBOARDING_KEY);
 const from_address = 'onboarding@youexist.michils.com';
 const notification_address = 'notification@youexist.michils.com';
-const support_address = 'support@youexist.michils.com';
-const noreply_address = 'noreply@youexist.michils.com';
+// const support_address = 'support@youexist.michils.com';
+// const noreply_address = 'noreply@youexist.michils.com';
 
 export function sendVerificationEmail(email: string, username: string, code: string) {
 	return resend.emails.send({

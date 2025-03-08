@@ -1,13 +1,43 @@
-import { fail, redirect } from '@sveltejs/kit';
-import type { PageServerLoad, Actions } from './$types';
-import type { Person } from '$lib/server/db/types';
 import { db } from '$lib/server/db';
+import type { Person } from '$lib/server/db/types';
+import type { PageServerLoad } from './$types';
+import { z } from 'zod';
+import { superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
 
-const results = new Map() as Map<string, Person[]>;
+const searchSchema = z.object({
+	search: z.string().min(1, 'Please enter a search term')
+});
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
+export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) => {
 	const { user, session } = await safeGetSession();
-	if (!user) return { status: 302, redirect: '/login', results: results };
+	const form = await superValidate(zod(searchSchema));
+
+	const searchQuery = url.searchParams.get('q');
+	const results = new Map<string, Person[]>();
+
+	if (searchQuery) {
+		form.data.search = searchQuery;
+		try {
+			const searchResult = await db.searchPerson(searchQuery);
+			console.log(searchResult);
+			if (searchResult.data && searchResult.data.length > 0) {
+				results.set(searchQuery, searchResult.data);
+			}
+		} catch (error) {
+			console.error('Search error:', error);
+		}
+	}
+
+	if (!user) {
+		return {
+			status: 200,
+			user: user,
+			results,
+			session: session,
+			form
+		};
+	}
 
 	const person = await db.getPersonById(user.id);
 	let username;
@@ -16,47 +46,22 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	} else {
 		username = person.data![0].username;
 	}
+
 	return {
 		status: 200,
 		username: username,
 		user: user,
-		results: results,
-		session: session
+		results,
+		session: session,
+		form
 	};
-	return { status: 302, redirect: '/login', results: results };
 };
 
-export const actions: Actions = {
+export const actions = {
 	signout: async ({ locals: { supabase, safeGetSession } }) => {
 		const { session } = await safeGetSession();
 		if (session) {
 			await supabase.auth.signOut();
 		}
-	},
-	search: async (event) => {
-		return fail(400, { status: 400, message: 'No search input' });
-		// const data = await event.request.formData();
-		// const searchInput = data.get('search');
-		// if (!searchInput || searchInput?.toString() == '') {
-		// 	return fail(400, { message: 'No search input, please enter a name below' });
-		// }
-		// const names = String(searchInput).split(' ');
-		// let returnData;
-		// if (results.has(String(searchInput))) {
-		// 	return results.get(String(searchInput));
-		// } else {
-		// 	results.clear();
-		// }
-		// if (names.length < 2) {
-		// 	returnData = await db.getPersonByGivenOrFamilyOrPreferredName(names[0]);
-		// } else {
-		// 	returnData = await db.getPersonByGivenAndFamilyName(names[0], names[1]);
-		// }
-		// if (returnData.rows.length === 0) {
-		// 	return { status: 404, results: results, message: 'No results found' };
-		// } else {
-		// 	results.set(String(searchInput), returnData.rows);
-		// 	return { results: results.get(String(searchInput)), message: 'Success' };
-		// }
 	}
 };

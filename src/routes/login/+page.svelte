@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import Button from '$lib/components/Button.svelte';
+
 	let { form, data } = $props();
 </script>
 
@@ -47,9 +49,9 @@
 				>
 			</div>
 
-			<button
+			<Button
 				class=" my-2 border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
-				>Log in</button
+				>Log in</Button
 			>
 		</form>
 		<p class="mt-3 mb-2 text-center text-forestgreen-700 dark:text-slate-200 font-bold font-gar">

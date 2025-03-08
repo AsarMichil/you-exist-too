@@ -1,69 +1,86 @@
 <script lang="ts">
-	import type { ActionData, PageData } from './$types';
 	import { goto } from '$app/navigation';
-	import { enhance } from '$app/forms';
-	let { data, form } = $props() as { data: PageData; form: ActionData };
+	import Input from '$lib/components/Input.svelte';
+	import type { PageData } from './$types';
+	import { ArrowBigDown, ArrowDown } from 'lucide-svelte';
+	import { tick } from 'svelte';
+	import { superForm } from 'sveltekit-superforms/client';
 
+	let { data } = $props() as { data: PageData };
+	const { form, errors, enhance: superEnhance } = superForm(data.form);
+
+	function handleSearch() {
+		if ($form.search) {
+			goto(`/?q=${encodeURIComponent($form.search)}`, { keepFocus: true });
+		}
+	}
+	let resultView: HTMLDivElement | null = $state(null);
 	$effect(() => {
 		if (data.results.size > 0) {
-			document.documentElement.style.scrollBehavior = 'smooth';
-			document.getElementById('results')?.scrollIntoView();
+			const autoscroll =
+				resultView && resultView.offsetHeight + resultView.scrollTop > resultView.scrollHeight - 50;
+			if (autoscroll) {
+				tick().then(() => {
+					if (!resultView) return;
+					window?.scrollTo({ top: resultView.scrollHeight, behavior: 'smooth' });
+				});
+			}
 		}
 	});
-	// beforeUpdate(() => {
-	// });
-	// let theme = createTheme();
-	let { user, session } = data;
 </script>
 
 <!-- F3ECE9 -->
-<section class="h-[calc(100vh-53px)] flex flex-col mx-6 dark:text-white">
+<section class="h-[calc(100vh-53px)] flex flex-col mx-6 dark:text-white relative">
 	<div class="flex flex-col h-5/6 items-center justify-center">
 		<!-- Center column -->
 		<div class="flex flex-col gap-3 mx-4">
 			{#if data.user}
-				<h1>Logged in!</h1>
+				<!-- <h1>Logged in!</h1> -->
 			{/if}
 
 			<!-- Search card -->
-			<form use:enhance method="post" action="?/search">
-				<div class="relative h-0 -top-12">
-					{#if form?.status}
-						<p
-							class="error bg-inherit text-rose-600 dark:bg-rose-600 dark:border-0 border-2 border-rose-600 rounded px-3 py-2 mb-2 transition-all ease-in-out dark:text-white"
-						>
-							{form.message}
-						</p>
-					{/if}
+			<div class="relative h-0 -top-12">
+				{#if $errors.search}
+					<p
+						class="error bg-inherit text-rose-600 dark:bg-rose-600 dark:border-0 border-2 border-rose-600 rounded px-3 py-2 mb-2 transition-all ease-in-out dark:text-white"
+					>
+						{$errors.search}
+					</p>
+				{/if}
+			</div>
+			<div
+				class="font-mont border-slate-800 dark:border-white border-2 rounded-md dark:bg-neutral-900 py-2 px-4"
+			>
+				<div class="px-1 mb-3 my-4 border-b border-neutral-500 pb-1">
+					<h1 class="inline text-l mr-1">(Hey!)</h1>
+					<h1 class="inline text-3xl">Who did you think about?</h1>
 				</div>
-				<div
-					class="font-mont border-slate-800 dark:border-white border-2 rounded-md dark:bg-neutral-900 py-2 px-4"
-				>
-					<div class="px-1 mb-3 my-4 border-b border-neutral-500 pb-1">
-						<h1 class="inline text-l mr-1">(Hey!)</h1>
-						<h1 class="inline text-3xl">Who did you think about?</h1>
-					</div>
 
-					<div class="mb-4">
-						<!-- svelte-ignore a11y_autofocus -->
-						<input
-							aria-label="Search who did you think about?"
-							autofocus
-							type="text"
-							name="search"
-							id="search"
-							placeholder="Search for someone you thought about"
-							class="w-full rounded border bg-inherit border-slate-800 p-2 focus:outline-none dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
-						/>
-
-						<!-- TODO: Add a form here, with a text input and a submit button -->
-					</div>
+				<div class="mb-4">
+					<Input
+						name="search"
+						bind:value={$form.search}
+						error={$errors.search}
+						placeholder="Search for someone you thought about"
+						autofocus
+						onkeydown={(e) => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								handleSearch();
+							}
+						}}
+					/>
+					<button
+						class="mt-4 w-full border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
+						onclick={handleSearch}
+					>
+						Search
+					</button>
 				</div>
-			</form>
+			</div>
 
 			<div class="w-100 mx-auto">- Or -</div>
 			<div class="flex flex-row gap-2">
-				<!-- TODO REIMPLEMENT THIS -->
 				{#if !data.user}
 					<button
 						aria-label="Sign up for an account"
@@ -93,7 +110,7 @@
 					>
 						<div class="px-auto">Your Profile</div>
 					</button>
-					<form method="post" action="?/signout" class="w-full" use:enhance>
+					<form method="post" action="?/signout" class="w-full" use:superEnhance>
 						<button
 							class="border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700 text-center"
 							aria-label="Sign out of your account"
@@ -105,28 +122,42 @@
 			</div>
 		</div>
 	</div>
+	{#if data.results.size > 0}
+		<div
+			class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent flex items-center justify-center pb-8"
+		>
+			<button
+				onclick={() => {
+					window?.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+				}}
+			>
+				<ArrowDown class="w-10 h-10 text-slate-800 dark:text-white" />
+			</button>
+		</div>
+	{/if}
 </section>
 
 {#if data.results.size > 0}
-	<div class="h-screen flex flex-col mx-6 dark:text-white" id="results">
-		<div>
-			<h1 class="text-3xl font-mont">Results</h1>
-			{#each data.results as result}
-				<!-- {JSON.stringify(result)} -->
-				{#each result[1] as p}
-					{JSON.stringify(p)}
-					<button
-						onclick={() => {
-							goto('/you/' + p.username);
-						}}
-					>
-						<div>
-							<h2>{p.given_name} {p.family_name}</h2>
-							<p>{p.username}</p>
-						</div>
-					</button>
-				{/each}
+	<div
+		class="h-screen flex flex-col mx-6 dark:text-white space-y-2 pt-6"
+		id="results"
+		bind:this={resultView}
+	>
+		<h1 class="text-3xl font-mont">Results</h1>
+		{#each data.results as result}
+			{#each result[1] as p}
+				<button
+					class="w-full text-left p-4 border border-slate-800 dark:border-white rounded-md mb-2 hover:bg-forestgreen-400 active:bg-forestgreen-700"
+					onclick={() => {
+						goto('/you/' + p.username);
+					}}
+				>
+					<div>
+						<h2 class="text-xl">{p.given_name} {p.family_name}</h2>
+						<p class="text-sm text-slate-600 dark:text-slate-300">@{p.username}</p>
+					</div>
+				</button>
 			{/each}
-		</div>
+		{/each}
 	</div>
 {/if}
