@@ -26,6 +26,12 @@ const supabase: Handle = async ({ event, resolve }) => {
 	});
 
 	/**
+	 * https://github.com/supabase/auth-js/issues/888#issuecomment-2617133616
+	 */
+	// @ts-expect-error ...
+	event.locals.supabase.auth.suppressGetSessionWarning = true;
+
+	/**
 	 * Unlike `supabase.auth.getSession()`, which returns the session _without_
 	 * validating the JWT, this function also calls `getUser()` to validate the
 	 * JWT before returning the session.

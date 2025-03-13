@@ -16,6 +16,7 @@
   "python.defaultInterpreterPath": "/Users/asarmichil/.local/share/mise/installs/python/3.13.0/bin/python",
   "go.alternateTools": {
     "go": "/Users/asarmichil/.local/share/mise/shims/go",
-    "dlv": "/Users/asarmichil/.local/share/mise/shims/dlv"
+    "dlv": "/Users/asarmichil/.local/share/mise/shims/dlv",
+    "gopls": "/Users/asarmichil/.local/share/mise/shims/gopls"
   }
 }

@@ -3,7 +3,7 @@
 	import type { HTMLTextareaAttributes } from 'svelte/elements';
 
 	interface TextareaProps extends HTMLTextareaAttributes {
-		label: string;
+		label?: string;
 		error?: string[] | undefined;
 	}
 
@@ -28,12 +28,14 @@
 			bind:value
 		>
 		</textarea><br />
-		<Label.Root
-			id={name + '-label'}
-			for={name}
-			class="dark:peer-autofill:text-black font-mont absolute -top-2 left-0"
-		>
-			{label}</Label.Root
-		>
+		{#if label}
+			<Label.Root
+				id={name + '-label'}
+				for={name}
+				class="dark:peer-autofill:text-black font-mont absolute -top-2 left-0"
+			>
+				{label}
+			</Label.Root>
+		{/if}
 	</div>
 </div>

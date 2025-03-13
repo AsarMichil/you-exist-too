@@ -1,58 +1,29 @@
 import { db } from '$lib/server/db';
-import type { Person, PersonWithId } from '$lib/server/db/types';
-import type { Actions, PageServerLoad } from './$types';
+import type { PersonWithId } from '$lib/server/db/types';
+import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 import { nanoid } from 'nanoid';
 
-export const load: PageServerLoad = async ({ params, locals: { safeGetSession } }) => {
-	const { data, error } = await db.getPersonByUsername(params.username);
-	const { user } = await safeGetSession();
-
-	if (error) {
-		console.error(error);
-		return fail(500, { error: error });
-	}
-	if (!data) {
-		return fail(404, { message: 'Person not found' });
-	}
-
-	const { ...person } = data[0] as PersonWithId;
-	let profile_photo_uri = '';
-	if (person.profile_photo_id) {
-		profile_photo_uri = db.getProfilePhotoById(person.profile_photo_id) + '.jpeg';
-	}
-	// profile_photo_uri = 'https://d1deenjh0g4q0v.cloudfront.net/ebtsDFGw5MnD0MDz6wDo2.jpeg';
-	return {
-		props: {
-			person: person as Person,
-			profile_photo_uri: profile_photo_uri,
-			own: user?.id === person.id
-		}
-	};
-};
+// The load function is no longer needed as we're using the layout data
+// All data is now loaded in +layout.server.ts
 
 export const actions: Actions = {
-	updateProfile: async ({ request, locals: { supabase, safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
-			return fail(401, { message: 'Unauthorized' });
-		}
-		const data = await request.formData();
-	},
-	setProfilePhoto: async ({ request, locals: { safeGetSession } }) => {
-		const { session } = await safeGetSession();
-		if (!session) {
+	uploadProfilePhoto: async ({ request, locals: { safeGetSession } }) => {
+		const { user } = await safeGetSession();
+		if (!user) {
 			return fail(401, { message: 'Unauthorized' });
 		}
 
+		const id = user.id;
 		const formData = await request.formData();
-		const { id } = session.user;
-		const profile_photo = formData.get('profile_photo') as File;
-		if (!profile_photo || profile_photo.size === 0) {
+		const profile_photo = formData.get('profile_photo');
+
+		if (!profile_photo || !(profile_photo instanceof File)) {
 			return fail(400, { message: 'No profile photo provided' });
 		}
-		const { error, data: personData } = await db.getPersonById(id);
 
+		// Get the person data to check if they already have a profile photo
+		const { data: personData, error } = await db.getPersonById(id);
 		if (error) {
 			return fail(500, { message: 'Database error' });
 		}
@@ -69,11 +40,16 @@ export const actions: Actions = {
 			}
 		}
 		profile_photo_id = nanoid();
-		const { error: uploadError, image_id: image_id } = await db.uploadProfilePhoto(
+		const { error: uploadError } = await db.uploadProfilePhoto(
 			id,
 			profile_photo,
 			profile_photo_id
 		);
+		
+		if (uploadError) {
+			return fail(500, { message: 'Failed to upload profile photo' });
+		}
+		
 		return {
 			status: 200,
 			body: {
