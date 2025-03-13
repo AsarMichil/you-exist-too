@@ -1,5 +1,6 @@
 import { client, db } from '$lib/server/db';
 import type { Person, PersonWithId } from '$lib/server/db/types';
+import { nullsToUndefined } from '$lib/types/utils';
 import type { LayoutServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 
@@ -16,7 +17,8 @@ export const load: LayoutServerLoad = async ({ params, locals: { safeGetSession 
 		return fail(404, { message: 'Person not found' });
 	}
 
-	const { ...person } = data[0] as PersonWithId;
+	const { ...nulledPerson } = data[0];
+	const person = nullsToUndefined(nulledPerson);
 	let profile_photo_uri = '';
 	if (person.profile_photo_id) {
 		profile_photo_uri = db.getProfilePhotoById(person.profile_photo_id) + '.jpeg';

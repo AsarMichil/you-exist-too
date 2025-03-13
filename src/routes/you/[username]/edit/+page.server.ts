@@ -34,7 +34,6 @@ export const load: PageServerLoad = async ({ parent, params, locals: { safeGetSe
 
 	const parentData = await parent();
 	const person = parentData.props?.person || {};
-
 	// Pre-populate the form with the user's current data
 	const form = await superValidate(person, zod(profileSchema));
 
