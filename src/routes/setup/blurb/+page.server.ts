@@ -18,10 +18,11 @@ export const load = async ({ locals }) => {
 	// Pre-fill the form with existing data if available
 	const { data: profile } = await locals.supabase
 		.from('person')
-		.select('preferred_name, origin, blurb')
+		.select('blurb')
 		.eq('id', locals.user.id)
 		.single();
 
+	console.log('blrubr', profile);
 	const form = await superValidate(profile, zod(schema));
 	return { form };
 };
@@ -49,7 +50,6 @@ export const actions = {
 			return fail(500, { form });
 		}
 
-		// Redirect to the main app after completing all setup steps
-		throw redirect(302, '/');
+		throw redirect(302, '/setup/profile-photo');
 	}
 };

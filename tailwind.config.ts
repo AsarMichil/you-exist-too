@@ -24,7 +24,7 @@ export default {
 					500: '#226C56',
 					700: '#0D4837'
 				},
-				cream:{
+				cream: {
 					200: '#F3ECE9'
 				}
 			},

@@ -31,7 +31,7 @@
 				This will be displayed on your profile. You can share your interests, hobbies, or anything
 				else you'd like others to know about you.
 			</div>
-			<Button type="submit">Finish Setup</Button>
+			<Button type="submit">Last Step</Button>
 		</form>
 	</BorderedBox>
 </main>

@@ -16,11 +16,7 @@
 			<div>
 				<div class="flex gap-2 items-baseline">
 					<div>I'm from:</div>
-					<CountrySelect
-						class="grow"
-						bind:value={$form.country}
-						error={$errors?.country}
-					/>
+					<CountrySelect class="grow" bind:value={$form.country} error={$errors?.country} />
 				</div>
 				{#if $errors?.country}
 					<p class="text-sm text-red-500">{$errors.country}</p>

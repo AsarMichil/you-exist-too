@@ -4,9 +4,11 @@
 
 	// Define the setup steps in order
 	const setupSteps = [
+		{ id: 'username', title: 'Your Username' },
 		{ id: 'name', title: 'Your Name' },
 		{ id: 'origin', title: 'Your Origin' },
-		{ id: 'blurb', title: 'Your Bio' }
+		{ id: 'blurb', title: 'Your Bio' },
+		{ id: 'profile-photo', title: 'Profile Photo' }
 	];
 
 	// Get the current step from the URL

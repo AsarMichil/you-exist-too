@@ -1,5 +1,7 @@
-import { Resend } from 'resend';
 import { env } from '$env/dynamic/private';
+import InviteEmail from './emails/Invite-Email';
+import { renderAsync } from '@react-email/render';
+import { Resend } from 'resend';
 
 const resend = new Resend(env.RESEND_ONBOARDING_KEY);
 const from_address = 'onboarding@youexist.michils.com';
@@ -54,5 +56,22 @@ export function sendPasswordReset(email: string, username: string, link: string)
 		<br /><br />
 		If you did not request this, feel free to ignore this email.</div>
 		`
+	});
+}
+// TODO handle already exists case
+export function sendInviteEmail(
+	email: string,
+	name: string,
+	inviteLink: string,
+	baseUrl: string,
+	thinker?: string,
+	alreadyExists?: boolean
+) {
+	console.log('Sending invite email to', email, name, inviteLink, baseUrl, thinker);
+	return resend.emails.send({
+		from: notification_address,
+		to: email,
+		subject: `You've been invited to join You Exist!`,
+		react: InviteEmail({ name, url: inviteLink, baseUrl, thinker, alreadyExists })
 	});
 }

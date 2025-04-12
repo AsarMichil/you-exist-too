@@ -10,7 +10,13 @@
 	import type { z } from 'zod';
 
 	let { data } = $props();
-	const { form, errors, message, enhance: superEnhance, constraints } = superForm(data.form, {
+	const {
+		form,
+		errors,
+		message,
+		enhance: superEnhance,
+		constraints
+	} = superForm(data.form, {
 		resetForm: false,
 		onResult: ({ result }) => {
 			// Check if the result contains existingEmail flag
@@ -22,10 +28,10 @@
 			return {};
 		}
 	});
-	
+
 	let isSubmitting = $state(false);
 	let existingEmail = $state(false);
-	
+
 	function handleResetPassword() {
 		goto('/auth/reset-password?email=' + encodeURIComponent($form.email));
 	}
@@ -39,7 +45,9 @@
 			<div class="space-y-4">
 				<p class="text-center">An account with this email already exists.</p>
 				<Button on:click={() => handleResetPassword()}>Reset Password</Button>
-				<Button on:click={() => existingEmail = false} class="bg-gray-200">Try Different Email</Button>
+				<Button on:click={() => (existingEmail = false)} class="bg-gray-200"
+					>Try Different Email</Button
+				>
 			</div>
 		{:else}
 			<form method="POST" use:superEnhance class="space-y-4">
@@ -55,7 +63,7 @@
 				{#if $errors.email}
 					<p class="text-sm text-red-500">{$errors.email}</p>
 				{/if}
-				
+
 				<Input
 					type="text"
 					name="username"
@@ -68,11 +76,11 @@
 				{#if $errors.username}
 					<p class="text-sm text-red-500">{$errors.username}</p>
 				{/if}
-				
+
 				{#if $message && !existingEmail}
 					<p class="text-sm text-red-500">{$message}</p>
 				{/if}
-				
+
 				<Button type="submit" disabled={isSubmitting}>
 					{#if isSubmitting}
 						<span class="inline-block animate-spin mr-2">⟳</span>

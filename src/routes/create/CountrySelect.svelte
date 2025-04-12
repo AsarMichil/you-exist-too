@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { SupportedCountries } from '$lib/types/person';
 	import type { HTMLSelectAttributes } from 'svelte/elements';
+
 	// let { type }: { type: 'text' | 'number' } = $props();
 	let {
 		class: className,

@@ -1,9 +1,10 @@
 import { db } from '$lib/server/db';
 import type { Person } from '$lib/server/db/types';
 import type { PageServerLoad } from './$types';
-import { z } from 'zod';
-import { superValidate } from 'sveltekit-superforms/server';
+import { redirect } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
+import { superValidate } from 'sveltekit-superforms/server';
+import { z } from 'zod';
 
 const searchSchema = z.object({
 	search: z.string().min(1, 'Please enter a search term')
@@ -14,15 +15,16 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 	const form = await superValidate(zod(searchSchema));
 
 	const searchQuery = url.searchParams.get('q');
-	const results = new Map<string, Person[]>();
+	let results: Person[] = [];
 
 	if (searchQuery) {
 		form.data.search = searchQuery;
 		try {
 			const searchResult = await db.searchPerson(searchQuery);
-			console.log(searchResult);
 			if (searchResult.data && searchResult.data.length > 0) {
-				results.set(searchQuery, searchResult.data);
+				results = searchResult.data;
+			} else {
+				results = [];
 			}
 		} catch (error) {
 			console.error('Search error:', error);
@@ -40,11 +42,16 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 	}
 
 	const person = await db.getPersonById(user.id);
+	// if no person but valid session, redirect to setup
+	console.log('root server fuck', person);
+	if (!person.data || person.data.length === 0) {
+		return redirect(302, '/setup');
+	}
 	let username;
-	if (person.count === 0) {
+	if (person.data.length === 0) {
 		username = undefined;
 	} else {
-		username = person.data![0].username;
+		username = person.data[0].username;
 	}
 
 	return {
@@ -63,5 +70,6 @@ export const actions = {
 		if (session) {
 			await supabase.auth.signOut();
 		}
+		return redirect(302, '/');
 	}
 };

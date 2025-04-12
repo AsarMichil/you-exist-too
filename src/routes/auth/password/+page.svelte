@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { ActionData, PageData } from './$types';
+
 	let { form, data } = $props();
 
 	$effect(() => {

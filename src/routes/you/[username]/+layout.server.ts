@@ -24,11 +24,24 @@ export const load: LayoutServerLoad = async ({ params, locals: { safeGetSession 
 		profile_photo_uri = db.getProfilePhotoById(person.profile_photo_id) + '.jpeg';
 	}
 
+	console.log('params.username', params.username);
+	const { count, error: thoughtCountError } = await client
+		.from('thought')
+		.select('*', { count: 'exact', head: true })
+		.eq('about', params.username.toLowerCase());
+
+	console.log('bals', count);
+
+	if (thoughtCountError) {
+		console.error(thoughtCountError);
+	}
+
 	return {
 		props: {
 			person: person as Person,
 			profile_photo_uri: profile_photo_uri,
-			own: user?.id === person.id
+			own: user?.id === person.id,
+			thoughtCount: count
 		}
 	};
 };

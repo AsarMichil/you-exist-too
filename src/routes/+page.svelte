@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/state';
 	import Input from '$lib/components/Input.svelte';
 	import type { PageData } from './$types';
 	import { ArrowBigDown, ArrowDown } from 'lucide-svelte';
 	import { tick } from 'svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 
-	let { data } = $props() as { data: PageData };
-	const { form, errors, enhance: superEnhance } = superForm(data.form);
+	let { data, url } = $props() as { data: PageData; url: URL };
+	const { form, errors } = superForm(data.form);
 
 	function handleSearch() {
 		if ($form.search) {
@@ -16,7 +17,7 @@
 	}
 	let resultView: HTMLDivElement | null = $state(null);
 	$effect(() => {
-		if (data.results.size > 0) {
+		if (data.results) {
 			const autoscroll =
 				resultView && resultView.offsetHeight + resultView.scrollTop > resultView.scrollHeight - 50;
 			if (autoscroll) {
@@ -27,6 +28,7 @@
 			}
 		}
 	});
+	// if query params exist, show the results div
 </script>
 
 <!-- F3ECE9 -->
@@ -110,7 +112,7 @@
 					>
 						<div class="px-auto">Your Profile</div>
 					</button>
-					<form method="post" action="?/signout" class="w-full" use:superEnhance>
+					<form method="post" action="?/signout" class="w-full">
 						<button
 							class="border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700 text-center"
 							aria-label="Sign out of your account"
@@ -122,7 +124,7 @@
 			</div>
 		</div>
 	</div>
-	{#if data.results.size > 0}
+	{#if data.results.length > 0}
 		<div
 			class="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent flex items-center justify-center pb-8"
 		>
@@ -137,15 +139,17 @@
 	{/if}
 </section>
 
-{#if data.results.size > 0}
+{#if page.url.searchParams.get('q')}
 	<div
 		class="h-screen flex flex-col mx-6 dark:text-white space-y-2 pt-6"
 		id="results"
 		bind:this={resultView}
 	>
-		<h1 class="text-3xl font-mont">Results</h1>
-		{#each data.results as result}
-			{#each result[1] as p}
+		{#if data.results.length === 0}
+			<h1 class="text-3xl font-mont">No results found :(</h1>
+		{:else}
+			<h1 class="text-3xl font-mont">Results</h1>
+			{#each data.results as p}
 				<button
 					class="w-full text-left p-4 border border-slate-800 dark:border-white rounded-md mb-2 hover:bg-forestgreen-400 active:bg-forestgreen-700"
 					onclick={() => {
@@ -158,6 +162,20 @@
 					</div>
 				</button>
 			{/each}
-		{/each}
+		{/if}
+		<button
+			class="w-full text-left p-4 border border-slate-800 dark:border-white rounded-md mb-2 hover:bg-forestgreen-400 active:bg-forestgreen-700"
+			onclick={() => {
+				goto('/invite?q=' + encodeURIComponent($form.search));
+			}}
+		>
+			<div>
+				<h2 class="text-xl">Thinking about someone else?</h2>
+				<p class="text-sm text-slate-600 dark:text-slate-300">
+					If you know the email or phone number of the person you're looking for, we can send them
+					an invite.
+				</p>
+			</div>
+		</button>
 	</div>
 {/if}

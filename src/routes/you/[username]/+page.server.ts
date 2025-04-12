@@ -40,16 +40,12 @@ export const actions: Actions = {
 			}
 		}
 		profile_photo_id = nanoid();
-		const { error: uploadError } = await db.uploadProfilePhoto(
-			id,
-			profile_photo,
-			profile_photo_id
-		);
-		
+		const { error: uploadError } = await db.uploadProfilePhoto(id, profile_photo, profile_photo_id);
+
 		if (uploadError) {
 			return fail(500, { message: 'Failed to upload profile photo' });
 		}
-		
+
 		return {
 			status: 200,
 			body: {

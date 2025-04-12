@@ -1,5 +1,5 @@
-import { redirect } from '@sveltejs/kit';
 import { type EmailOtpType } from '@supabase/supabase-js';
+import { redirect } from '@sveltejs/kit';
 
 export const GET = async (event) => {
 	const {

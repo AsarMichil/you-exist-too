@@ -30,11 +30,10 @@
 
 <Select
 	class={className}
-	name={name}
+	{name}
 	id={name}
-	{label}
 	options={countries}
-	bind:value={value}
+	bind:value
 	error={formattedError}
 	{...other}
-/> 
+/>

@@ -1,6 +1,6 @@
 <script lang="ts">
+	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 	import { flagEmoji } from '$lib/icons/FlagIcon';
-	import ProfilePhotoUpload from './ProfilePhotoUpload.svelte';
 	import { Dialog, Separator } from 'bits-ui';
 	import { X } from 'lucide-svelte';
 
@@ -70,7 +70,13 @@
 				{/if}
 			</Dialog.Title>
 			<Separator.Root class="bg-slate-800 dark:bg-white -mx-5 mb-6 mt-5 block h-px" />
-			<ProfilePhotoUpload {profile_photo_uri} {isOwnProfile} />
+			<ProfilePhotoUpload
+				{profile_photo_uri}
+				{isOwnProfile}
+				onSuccess={() => {
+					window.location.reload();
+				}}
+			/>
 			<Dialog.Close
 				class="focus-visible:ring-foreground focus-visible:ring-offset-background focus-visible:outline-hidden absolute right-6 top-6 rounded-md focus-visible:ring-2 focus-visible:ring-offset-2 active:scale-[0.98]"
 			>

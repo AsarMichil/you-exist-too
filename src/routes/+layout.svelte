@@ -1,12 +1,14 @@
 <script lang="ts">
-	import '../app.css';
-	import { createTheme } from '$lib/stores/theme.svelte';
 	import { invalidate } from '$app/navigation';
+	import { createTheme } from '$lib/stores/theme.svelte';
+	import '../app.css';
+	import { onMount } from 'svelte';
+
 	let theme = createTheme();
 	let { data, children } = $props();
 	let { supabase, session } = data;
 
-	$effect(() => {
+	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
@@ -72,8 +74,8 @@
 				<input
 					checked={theme!.current === 'dark'}
 					onclick={() => {
-					theme!.setTheme(theme!.current === 'dark' ? 'light' : 'dark');
-				}}
+						theme!.setTheme(theme!.current === 'dark' ? 'light' : 'dark');
+					}}
 					aria-label="Toggle dark mode"
 					type="checkbox"
 					id="theme-toggle"

@@ -1,4 +1,5 @@
 import type { Person } from '$lib/types/person';
+
 export * from '$lib/types/person';
 export interface DatabaseUser {
 	id: string;

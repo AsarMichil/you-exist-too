@@ -216,7 +216,7 @@ export class Database {
 	public async vectorSearchPerson(query: string) {
 		return await Database.client.from('person').select('*').textSearch('search_vector', query);
 	}
-	public async searchPerson(query: string) {
+	public async searchPerson(query: string): Promise<{ data: Person[] | null; error: any }> {
 		return await Database.client.rpc('search_person', {
 			search_term: query,
 			is_autocomplete: false

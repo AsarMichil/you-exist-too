@@ -1,9 +1,9 @@
-import { fail, redirect } from '@sveltejs/kit';
-import type { Actions, PageServerLoad } from '../$types';
-import { db, client } from '$lib/server/db';
 import { dev } from '$app/environment';
 import { DEV_URL, PROD_URL } from '$env/static/private';
+import { db, client } from '$lib/server/db';
 import { sendPasswordReset } from '$lib/server/email/send-email';
+import type { Actions, PageServerLoad } from '../$types';
+import { fail, redirect } from '@sveltejs/kit';
 
 const currentUrl = dev ? DEV_URL : PROD_URL;
 

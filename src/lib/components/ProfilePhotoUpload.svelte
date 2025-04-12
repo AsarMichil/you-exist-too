@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { Slider, Progress, useId } from 'bits-ui';
+	import { Slider, useId } from 'bits-ui';
 	import { LoaderCircle, Pencil, RotateCw } from 'lucide-svelte';
 
 	let {
 		profile_photo_uri,
-		isOwnProfile
-	}: { profile_photo_uri: string | undefined; isOwnProfile: boolean } = $props();
+		isOwnProfile,
+		onSuccess
+	}: { profile_photo_uri: string | undefined; isOwnProfile: boolean; onSuccess?: () => void } =
+		$props();
 
 	let uploading = $state(false);
-	let uploadProgress = $state(0);
 	let fileInput = $state<HTMLInputElement | undefined>();
 	let canvas: HTMLCanvasElement | undefined = $state();
 	let ctx: CanvasRenderingContext2D | undefined | null = $derived(canvas?.getContext('2d'));
@@ -167,7 +168,6 @@
 		if (!canvas) return;
 
 		uploading = true;
-		uploadProgress = 0;
 
 		try {
 			// Convert canvas to blob
@@ -183,35 +183,23 @@
 				}
 			});
 
-			// Create a mock upload with progress
-			const xhr = new XMLHttpRequest();
-			xhr.open('POST', '/api/profile/photos', true);
-			xhr.setRequestHeader('Content-Type', 'image/jpeg');
-
-			// Track upload progress
-			xhr.upload.onprogress = (e) => {
-				if (e.lengthComputable) {
-					uploadProgress = Math.round((e.loaded / e.total) * 100);
+			// Simple fetch request without progress tracking
+			const response = await fetch('/api/profile/photos', {
+				method: 'POST',
+				body: blob,
+				headers: {
+					'Content-Type': 'image/jpeg'
 				}
-			};
+			});
 
-			xhr.onload = () => {
-				if (xhr.status === 200) {
-					// Reload the page to show the updated profile photo
-					window.location.reload();
-				} else {
-					console.error('Error uploading profile photo:', xhr.statusText);
-					uploading = false;
-				}
-			};
 
-			xhr.onerror = () => {
-				console.error('Network error during profile photo upload');
+			if (response.ok) {
+				// Successful upload
+				onSuccess?.();
+			} else {
+				console.error('Error uploading profile photo:', response.statusText);
 				uploading = false;
-			};
-
-			// Send the blob
-			xhr.send(blob);
+			}
 		} catch (error) {
 			console.error('Error uploading profile photo:', error);
 			uploading = false;
@@ -317,21 +305,7 @@
 
 			{#if uploading}
 				<div class="flex flex-col gap-2 mb-4">
-					<div class="flex items-center justify-between text-sm font-medium">
-						<span id={progressLabelId}>Uploading profile photo...</span>
-						<span>{uploadProgress}%</span>
-					</div>
-					<Progress.Root
-						aria-labelledby={progressLabelId}
-						value={uploadProgress}
-						max={100}
-						class="bg-dark-10 shadow-mini-inset relative h-[15px] w-full overflow-hidden rounded-full"
-					>
-						<div
-							class="bg-forestgreen-400 shadow-mini-inset h-full w-full flex-1 rounded-full transition-all duration-1000 ease-in-out"
-							style={`transform: translateX(-${100 - (100 * (uploadProgress ?? 0)) / 100}%)`}
-						></div>
-					</Progress.Root>
+					<LoaderCircle class="w-4 h-4 animate-spin" />
 				</div>
 			{:else}
 				<button
@@ -345,7 +319,7 @@
 	{:else}
 		<div class="flex justify-center w-full rounded-lg p-4">
 			<img
-				src={profile_photo_uri}
+				src={profile_photo_uri ?? '/bear/Wave.png'}
 				alt="avatar"
 				class="rounded-full w-56 h-56 mx-auto mb-4 border-4 border-slate-800 dark:border-white"
 			/>
@@ -371,7 +345,7 @@
 				{:else}
 					<Pencil class="w-4 h-4" />
 				{/if}
-				Edit
+				Select Profile Photo
 			</label>
 		</div>
 	{/if}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HTMLInputAttributes } from 'svelte/elements';
+
 	// let { type }: { type: 'text' | 'number' } = $props();
 	let {
 		class: className,
