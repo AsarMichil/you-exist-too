@@ -1,6 +1,10 @@
 import { env } from '$env/dynamic/private';
+import { client } from '../db';
+import ConfirmEmail from './emails/Confirm-Email';
 import InviteEmail from './emails/Invite-Email';
+import PasswordResetEmail from './emails/PasswordReset-Email';
 import { renderAsync } from '@react-email/render';
+import type { GenerateLinkParams, GenerateLinkType } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
 const resend = new Resend(env.RESEND_ONBOARDING_KEY);
@@ -9,32 +13,13 @@ const notification_address = 'notification@youexist.michils.com';
 // const support_address = 'support@youexist.michils.com';
 // const noreply_address = 'noreply@youexist.michils.com';
 
-export function sendVerificationEmail(email: string, username: string, code: string) {
-	return resend.emails.send({
-		from: from_address,
-		to: email,
-		subject: `Verify your email ${username}`,
-		html: `<p>Hey! ${username}<br>Thanks for signing up for You Exist.<br>Verify your email address to continue registration!</p>
-		<div>Your code is:<br>${code}<br><br></div>
-		<div>Thanks,</div>
-		<div>
-		<br />- Asar</div>`
-	});
-}
 
-export function sendSignupLink(email: string, username: string, link: string) {
+export function sendEmailConfirmation(email: string, username: string, link: string) {
 	return resend.emails.send({
 		from: from_address,
 		to: email,
-		subject: `Verify your email ${username}`,
-		html: `<p>Hey! ${username}<br>Thanks for signing up for You Exist.<br>Click the link to register!</p>
-		<div>Your link is:<br>
-		<a href="${link}">Here!</a><br>
-		<br>
-		</div>
-		<div>Thanks,</div>
-		<div>
-		<br />- Asar</div>`
+		subject: `Verify your email ${username} | You Exist`,
+		react: ConfirmEmail({ name: username, url: link })
 	});
 }
 
@@ -42,20 +27,8 @@ export function sendPasswordReset(email: string, username: string, link: string)
 	return resend.emails.send({
 		from: notification_address,
 		to: email,
-		subject: `You Exist: Password Reset Request For Your Account`,
-		html: `<p>Hey! <br>You requested a password reset link<br>Click the link to reset your password!</p>
-		<div>Your link is:<br>
-		<a href="${link}">Here!</a><br>
-		<br>
-		<div>Do not share this link with anyone!</div>
-		</div>
-		<div>Thanks,</div>
-		<div>
-		<br />- Asar</div>
-		<div>
-		<br /><br />
-		If you did not request this, feel free to ignore this email.</div>
-		`
+		subject: `Reset Your Password | You Exist`,
+		react: PasswordResetEmail({ name: username, url: link })
 	});
 }
 // TODO handle already exists case
@@ -75,3 +48,29 @@ export function sendInviteEmail(
 		react: InviteEmail({ name, url: inviteLink, baseUrl, thinker, alreadyExists })
 	});
 }
+
+export async function stealHash(linkParams: GenerateLinkParams) {
+	let token_hash = null;
+	const { data, error } = await client.auth.admin.generateLink(linkParams);
+	if (error) {
+		console.error('Error generating link:', error);
+		return { data: null, error: error };
+	}
+	token_hash = data.properties.hashed_token;
+	return { data: { token_hash, otp: data.properties.email_otp, user: data.user }, error: null };
+}
+export interface MagicLinkEmailProps {
+	site_url: string;
+	email_action_type: GenerateLinkType;
+	redirect_to: string;
+	token_hash: string;
+}
+
+export const generateEmailLink = ({
+	site_url,
+	email_action_type,
+	redirect_to,
+	token_hash
+}: MagicLinkEmailProps) => {
+	return `${site_url}/auth/confirm?token_hash=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`;
+};

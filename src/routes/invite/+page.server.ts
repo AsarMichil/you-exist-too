@@ -1,5 +1,5 @@
 import { client, db } from '$lib/server/db/index.js';
-import { sendInviteEmail } from '$lib/server/email/send-email';
+import { generateEmailLink, sendInviteEmail, stealHash } from '$lib/server/email/send-email';
 import { isAuthApiError } from '@supabase/supabase-js';
 import { fail } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -62,7 +62,7 @@ export const actions = {
 			// TODO send already exists email
 			// Generate magic link
 			let token_hash = null;
-			const { data, error } = await client.auth.admin.generateLink({
+			const { data, error } = await stealHash({
 				type: 'invite',
 				email: contactInfo,
 				options: {
@@ -78,17 +78,14 @@ export const actions = {
 				}
 				return fail(500, { form, message: 'Failed to send invitation' });
 			}
-			token_hash = data.properties.hashed_token;
+			token_hash = data.token_hash;
 
-			inviteLink = generateInviteLink({
+			inviteLink = generateEmailLink({
 				site_url: url.origin,
 				email_action_type: 'invite',
 				redirect_to: `${url.origin}?invited=true&name=${encodeURIComponent(name)}`,
 				token_hash
 			});
-			if (error) {
-				throw error;
-			}
 			if (!sendAnonymously) {
 				const user = locals.user;
 				if (user) {
@@ -112,21 +109,3 @@ export const actions = {
 		return message(form, 'Invitation sent');
 	}
 };
-
-interface MagicLinkEmailProps {
-	site_url: string;
-	email_action_type: string;
-	redirect_to: string;
-	token_hash: string;
-}
-
-const generateInviteLink = ({
-	site_url,
-	email_action_type,
-	redirect_to,
-	token_hash
-}: MagicLinkEmailProps) => {
-	return `${site_url}/auth/confirm?token_hash=${token_hash}&type=${email_action_type}&redirect_to=${redirect_to}`;
-};
-
-// https://kyyeruyisvmpntjezwlw.supabase.co/auth/v1/verify?token=e30953c998cc78c9f195a55e01d2fd3d8341307e30232dd8fde50c53&type=invite&redirect_to=http%3A%2F%2Flocalhost%3A5174%2Fsignup%3Finvited%3Dtrue%26name%3Dbear4

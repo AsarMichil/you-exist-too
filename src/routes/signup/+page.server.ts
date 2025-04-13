@@ -1,3 +1,4 @@
+import { generateEmailLink, sendEmailConfirmation, stealHash } from '$lib/server/email/send-email';
 import { fail, redirect } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -49,33 +50,41 @@ export const actions = {
 			}
 			console.log('redirect url', `${new URL(request.url).origin}/setup`);
 			// Attempt to create a new user with Supabase Auth
-			const { data: authData, error: authError } = await locals.supabase.auth.signUp({
+			const { data, error } = await stealHash({
+				type: 'signup',
 				email: form.data.email,
 				password: crypto.randomUUID(), // Generate a random password for passwordless auth
 				options: {
-					data: {
-						username: form.data.username
-					},
-					emailRedirectTo: `${new URL(request.url).origin}/setup`
+					redirectTo: `${new URL(request.url).origin}/setup`
 				}
 			});
-			console.log('authData', authData);
-			if (authError) {
-				console.error('Auth error:', authError);
-				return fail(500, { form, message: authError.message });
+
+			if (error) {
+				console.error('Auth error:', error);
+				return fail(500, { form, message: error.message });
 			}
 
-			// Create a profile record in the person table
-			if (authData.user) {
-				const { error: profileError } = await locals.supabase.from('person').insert({
-					id: authData.user.id,
-					username: form.data.username
-				});
+			sendEmailConfirmation(
+				form.data.email,
+				form.data.username,
+				generateEmailLink({
+					site_url: new URL(request.url).origin,
+					email_action_type: 'signup',
+					redirect_to: `${request.url}/setup`,
+					token_hash: data.token_hash
+				})
+			);
 
-				if (profileError) {
-					console.error('Profile creation error:', profileError);
-					return fail(500, { form, message: 'Failed to create profile' });
-				}
+			// Create a profile record in the person table
+
+			const { error: profileError } = await locals.supabase.from('person').insert({
+				id: data.user.id,
+				username: form.data.username
+			});
+
+			if (profileError) {
+				console.error('Profile creation error:', profileError);
+				return fail(500, { form, message: 'Failed to create profile' });
 			}
 
 			// Redirect to the verify email page

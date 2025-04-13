@@ -1,12 +1,19 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
+	import { superForm } from 'sveltekit-superforms/client';
 
-	let { form, data } = $props();
+	export let data;
+	
+	const { form, errors, enhance, message } = superForm(data.form, {
+		onUpdated: ({ form }) => {
+			if (form.success) {
+				// Success already handled by the component
+			}
+		}
+	});
 </script>
 
-{#if form?.success}
-	<!-- {#if true} -->
+{#if $form.success}
 	<div class="z-10" id="success-modal">
 		<div class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
 			<div
@@ -14,7 +21,7 @@
 			>
 				<h2 class="text-center font-gar text-3xl">Success!</h2>
 				<p class="text-center mt-3">
-					{form.message}
+					{$message || "Email sent! Check your inbox!"}
 				</p>
 				<button
 					class="w-full mt-5 hover:bg-forestgreen-500 active:bg-forestgreen-400 rounded-md py-2 border border-black dark:border-white"
@@ -38,18 +45,19 @@
 			Enter your email or username and we'll send you a link to get back into your account.
 		</p>
 		<form method="post" use:enhance>
-			{#if form?.message}<p
-					class="error bg-amber-300 dark:bg-amber-600 rounded px-3 py-2 mb-2 transition-all ease-in-out"
-				>
-					{form.message}
-				</p>{/if}
+			{#if $message}
+				<p class="error bg-amber-300 dark:bg-amber-600 rounded px-3 py-2 mb-2 transition-all ease-in-out">
+					{$message}
+				</p>
+			{/if}
 
 			<div class="relative w-full mb-2 h-10 top-0">
 				<input
 					type="text"
 					name="username_or_email"
 					id="username_or_email"
-					class=" text-sm pt-3 pb-1 px-3 rounded border w-full bg-inherit border-slate-800 p-2 focus:outline-none dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700 peer"
+					bind:value={$form.username_or_email}
+					class="text-sm pt-3 pb-1 px-3 rounded border w-full bg-inherit border-slate-800 p-2 focus:outline-none dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700 peer"
 					placeholder=" "
 				/><br />
 				<label
@@ -57,9 +65,12 @@
 					class="dark:peer-autofill:text-black peer-placeholder-shown:translate-x-1 -left-1 top-10 font-mont absolute transform -translate-y-10 scale-75 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-7 peer-placeholder-shown:pl-3 px-1"
 					>Username or email</label
 				>
+				{#if $errors.username_or_email}
+					<span class="text-red-500 text-sm">{$errors.username_or_email}</span>
+				{/if}
 			</div>
 			<button
-				class=" my-2 border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
+				class="my-2 border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
 				>Send Reset Request</button
 			>
 		</form>

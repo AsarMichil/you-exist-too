@@ -1,68 +1,86 @@
 import { dev } from '$app/environment';
 import { DEV_URL, PROD_URL } from '$env/static/private';
-import { db, client } from '$lib/server/db';
-import { sendPasswordReset } from '$lib/server/email/send-email';
+import { db } from '$lib/server/db';
+import { generateEmailLink, sendPasswordReset, stealHash } from '$lib/server/email/send-email';
 import type { Actions, PageServerLoad } from '../$types';
 import { fail, redirect } from '@sveltejs/kit';
+import { setError, superValidate } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { z } from 'zod';
 
 const currentUrl = dev ? DEV_URL : PROD_URL;
+
+// Define schema for the form
+const schema = z.object({
+	username_or_email: z.string().min(1, { message: 'Username or email is required' })
+});
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	const { session } = await safeGetSession();
 	if (session) {
 		redirect(302, '/');
 	}
-	return {};
+	
+	const form = await superValidate(zod(schema));
+	return { form };
 };
 
 export const actions: Actions = {
-	default: async ({ request }) => {
-		let email;
-		const formData = await request.formData();
-		const username_or_email = formData.get('username_or_email');
-		if (typeof username_or_email !== 'string') {
-			return fail(400, {
-				message: 'Invalid username or email'
-			});
+	default: async ({ request, url }) => {
+		const form = await superValidate(request, zod(schema));
+		
+		if (!form.valid) {
+			return fail(400, { form });
 		}
-		if (username_or_email && username_or_email.includes('@')) {
+		
+		let email;
+		const username_or_email = form.data.username_or_email;
+		
+		if (username_or_email.includes('@')) {
 			email = username_or_email;
 		} else {
 			email = await db.getPersonEmail(username_or_email);
 		}
+		
 		if (!email) {
-			return fail(400, {
-				message: 'User not found'
-			});
+			return setError(form, 'username_or_email', 'User not found');
 		}
 
-		const { data, error } = await client.auth.admin.generateLink({
-			type: 'recovery',
-			email: email,
-			options: {
-				redirectTo: currentUrl + '/auth/password'
+		try {
+			const { data, error } = await stealHash({
+				type: 'recovery',
+				email: email,
+				options: {
+					redirectTo: `${url.origin}/auth/password`
+				}
+			});
+
+			if (error) {
+				console.error('Password reset error:', error);
+				return fail(500, { form, message: error.message });
 			}
-		});
-		if (error) {
-			return fail(500, {
-				message: error.message
-			});
-		}
 
-		const link =
-			currentUrl +
-			'/auth/confirm?token_hash=' +
-			data.properties.hashed_token +
-			'&type=' +
-			data.properties.verification_type +
-			'&next=' +
-			data.properties.redirect_to;
-		const resendRes = await sendPasswordReset(email, email, link);
-		if (resendRes.error) {
-			return fail(500, {
-				message: resendRes.error
+			const link = generateEmailLink({
+				site_url: url.origin,
+				email_action_type: "recovery",
+				redirect_to: `${url.origin}/auth/password`,
+				token_hash: data.token_hash
 			});
+			
+			const resendRes = await sendPasswordReset(email, email, link);
+			if (resendRes.error) {
+				console.error('Email sending error:', resendRes.error);
+				return fail(500, { form, message: 'Failed to send password reset email' });
+			}
+			
+			return {
+				form,
+				success: true,
+				message: 'Email sent! Check your inbox!'
+			};
+		} catch (error) {
+			console.error('Password reset error:', error);
+			return fail(500, { form, message: 'An unexpected error occurred' });
 		}
-		return { success: true, message: 'Email sent! Check your inbox!' };
 	}
 };
