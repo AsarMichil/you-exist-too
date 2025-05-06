@@ -25,8 +25,8 @@
 			<h1 class="text-xl font-bold">Complete Your Profile</h1>
 
 			<!-- Progress bar -->
-			<div class="w-full bg-gray-200 rounded-full h-2.5 mt-4">
-				<div class="bg-forestgreen-500 h-2.5 rounded-full" style="width: {progress}%"></div>
+			<div class="w-full bg-gray-200 rounded-full h-1 mt-4">
+				<div class="bg-forestgreen-500 h-1 rounded-full" style="width: {progress}%"></div>
 			</div>
 		</div>
 	</header>

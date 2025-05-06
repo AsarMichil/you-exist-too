@@ -1,18 +1,12 @@
 <script lang="ts">
 	import Checkbox from './Checkbox.svelte';
 	import { Heart, LoaderCircle } from 'lucide-svelte';
-	import { toast } from 'svelte-sonner';
 
 	let { username, thoughtCount = 0 }: { username: string; thoughtCount: number } = $props();
 	let isLoggedIn = $state(false);
 	let isAnonymous = $state(false);
 	let isSubmitting = $state(false);
-	let localThoughtCount = $state(thoughtCount);
-
-	// Update local count when prop changes
-	$effect(() => {
-		localThoughtCount = thoughtCount;
-	});
+	let ambitiousThoughtCount = $state(thoughtCount);
 
 	// Check if user is logged in
 	$effect(() => {
@@ -31,11 +25,10 @@
 	});
 
 	async function addThought() {
-		if (isSubmitting) return;
-
-		isSubmitting = true;
-
 		try {
+			// increment the thought count locally
+			ambitiousThoughtCount += 1;
+
 			const response = await fetch('/api/thoughts', {
 				method: 'POST',
 				headers: {
@@ -50,17 +43,12 @@
 			const data = await response.json();
 
 			if (response.ok) {
-				toast.success('Thought added successfully!');
-				// Increment the thought count locally
-				localThoughtCount += 1;
+				console.log('Thought added successfully!');
 			} else {
-				toast.error(data.error || 'Failed to add thought');
+				console.error('Failed to add thought:', data.error);
 			}
 		} catch (error) {
 			console.error('Error adding thought:', error);
-			toast.error('An error occurred while adding your thought');
-		} finally {
-			isSubmitting = false;
 		}
 	}
 </script>
@@ -74,14 +62,14 @@
 		{#if isSubmitting}
 			<LoaderCircle class="w-5 h-5 animate-spin" />
 		{:else}
-			<Heart class="w-5 h-5" fill={localThoughtCount > 0 ? 'currentColor' : 'none'} />
+			<Heart class="w-5 h-5" fill={ambitiousThoughtCount > 0 ? 'currentColor' : 'none'} />
 		{/if}
 		<span>I Thought About You</span>
 	</button>
 
 	<div class="text-sm text-slate-600 dark:text-slate-300">
-		{localThoughtCount}
-		{localThoughtCount === 1 ? 'person has' : 'people have'} thought about {username}
+		{ambitiousThoughtCount}
+		{ambitiousThoughtCount === 1 ? 'person has' : 'people have'} thought about {username}
 	</div>
 
 	{#if isLoggedIn}
