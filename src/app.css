@@ -6,7 +6,12 @@ body {
 	background-color: #f3ece9;
 }
 
-div[data-page-id="setup"] ~ body,
-:has(div[data-page-id="setup"]) body {
+/* div[data-page-id='setup'] ~ body,
+:has(div[data-page-id='setup']) body {
 	overscroll-behavior: none;
+} */
+
+input:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
 }

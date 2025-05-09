@@ -1,9 +1,9 @@
 <script lang="ts">
 	import BorderedBox from '$lib/components/BorderedBox.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import ExpandableContent from '$lib/components/clean-form/ExpandableContent.svelte';
 	import ErrorTag from '$lib/components/ErrorTag.svelte';
 	import Input from '$lib/components/Input.svelte';
+	import ExpandableContent from '$lib/components/clean-form/ExpandableContent.svelte';
 	import { fade, slide } from 'svelte/transition';
 	import { superForm } from 'sveltekit-superforms';
 
@@ -67,10 +67,3 @@
 		</form>
 	</BorderedBox>
 </section>
-
-<style>
-	:global(input:disabled) {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-</style>

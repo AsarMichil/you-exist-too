@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { onNavigate } from '$app/navigation';
 	import { navigationDirection } from '$lib/stores/navigation';
-	import '$lib/styles/transitions.css';
+	import { cubicOut } from 'svelte/easing';
+	import { fade, fly } from 'svelte/transition';
 
 	// Define the setup steps in order
 	const setupSteps = [
@@ -25,32 +25,39 @@
 	let backButtonStep = $derived(setupSteps[currentStepIndex - 1 > 0 ? currentStepIndex - 1 : 0]);
 	let nextButtonStep = $derived(setupSteps[currentStepIndex + 1]);
 
-	// Setup view transitions
-	onNavigate((navigation) => {
-		if (!document.startViewTransition) return;
+	// Track navigation direction for transitions
+	let direction = $state('forward');
 
-		// Determine if we're going forward or backward in steps
-		const targetStepId = navigation.to?.url.pathname.split('/').pop();
-		const targetStepIndex = setupSteps.findIndex((step) => step.id === targetStepId);
-		const isForwardStep = targetStepIndex > currentStepIndex;
+	// Define transition parameters based on direction
+	let inTransition = $derived(
+		direction === 'forward'
+			? { y: '50vh', delay: 300, duration: 300, opacity: 0, easing: cubicOut }
+			: { y: '-50vh', delay: 300, duration: 300, opacity: 0, easing: cubicOut }
+	);
 
-		// Update navigation direction
-		navigationDirection.set(isForwardStep ? 'forward' : 'backward');
-
-		// Update document classes
-		document.documentElement.classList.remove('is-forward', 'is-backward');
-		document.documentElement.classList.add(isForwardStep ? 'is-forward' : 'is-backward');
-
-		return new Promise((resolve) => {
-			document.startViewTransition(async () => {
-				resolve();
-				await navigation.complete;
-			});
-		});
+	let outTransition = $derived({
+		y: direction === 'forward' ? '-50vh' : '50vh',
+		duration: 300,
+		opacity: 0,
+		easing: cubicOut
 	});
+
+	const goForward = () => {
+		direction = 'forward';
+		goto(nextButtonStep.id);
+	};
+
+	const goBack = () => {
+		direction = 'backward';
+		goto(backButtonStep.id);
+	};
+
 </script>
 
-<div class="flex flex-col h-svh dark:text-white" data-page-id="setup">
+<div
+	class="flex flex-col h-svh dark:text-white"
+	data-page-id="setup"
+>
 	<header class="border-b">
 		<!-- Progress bar -->
 		<div class="w-full bg-gray-200 h-1">
@@ -58,8 +65,12 @@
 		</div>
 	</header>
 
-	<main class="relative flex-grow">
-		{@render children()}
+	<main class="relative flex-grow" >
+		{#key page.url.pathname}
+			<div class="w-full h-full" in:fly={inTransition} out:fly={outTransition}>
+				{@render children()}
+			</div>
+		{/key}
 	</main>
 
 	<div class="absolute bottom-4 right-4">
@@ -68,18 +79,14 @@
 				{#if showBackButton}
 					<button
 						class="bg-forestgreen-500 text-white px-4 py-2 rounded-md"
-						onclick={() => {
-							goto(backButtonStep.id);
-						}}
+						onclick={goBack}
 					>
 						Back
 					</button>
 				{/if}
 				<button
 					class="bg-forestgreen-500 text-white px-4 py-2 rounded-md"
-					onclick={() => {
-						goto(nextButtonStep.id);
-					}}
+					onclick={goForward}
 				>
 					Next
 				</button>

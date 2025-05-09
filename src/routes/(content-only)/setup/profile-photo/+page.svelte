@@ -27,10 +27,3 @@
 		</div>
 	</BorderedBox>
 </section>
-
-<style>
-	:global(input:disabled) {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-</style>
