@@ -16,7 +16,7 @@
 	);
 </script>
 
-<main class="flex flex-col w-full h-full justify-center items-center p-4">
+<section class="flex flex-col w-full h-full justify-center items-center p-4">
 	<BorderedBox>
 		<h1 class="font-mont text-lg font-semibold w-full">Choose a Username</h1>
 
@@ -66,7 +66,7 @@
 			<Button type="submit" disabled={!isValid}>Next</Button>
 		</form>
 	</BorderedBox>
-</main>
+</section>
 
 <style>
 	:global(input:disabled) {

@@ -8,7 +8,7 @@
 	const { form, errors, enhance } = superForm(data.form);
 </script>
 
-<main class="flex flex-col w-full h-full justify-center items-center p-4 space-y-4">
+<section class="flex flex-col w-full h-full justify-center items-center p-4 space-y-4">
 	<h1 class="font-mont text-2xl">Where are you from?</h1>
 
 	<BorderedBox>
@@ -26,4 +26,4 @@
 			<Button type="submit">Next</Button>
 		</form>
 	</BorderedBox>
-</main>
+</section>
