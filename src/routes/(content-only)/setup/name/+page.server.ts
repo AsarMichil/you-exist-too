@@ -6,7 +6,7 @@ import { z } from 'zod';
 const schema = z.object({
 	given_name: z.string().optional(),
 	family_name: z.string().optional(),
-	preferred_name: z.string().min(1, { message: 'Name is required' })
+	preferred_name: z.string().min(1, { message: 'Please enter your preferred name' })
 });
 
 export const load = async ({ locals }) => {

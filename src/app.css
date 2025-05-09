@@ -5,3 +5,8 @@
 body {
 	background-color: #f3ece9;
 }
+
+div[data-page-id="setup"] ~ body,
+:has(div[data-page-id="setup"]) body {
+	overscroll-behavior: none;
+}

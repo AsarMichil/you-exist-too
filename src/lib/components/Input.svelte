@@ -5,6 +5,8 @@
 	interface InputProps extends HTMLInputAttributes {
 		label?: string;
 		error?: string[] | undefined;
+		bottomBorderOnly?: boolean;
+		massive?: boolean;
 	}
 
 	let {
@@ -14,6 +16,9 @@
 		name,
 		label,
 		error,
+		bottomBorderOnly = false,
+		placeholder,
+		massive = false,
 		...other
 	}: InputProps = $props();
 </script>
@@ -24,8 +29,10 @@
 			{name}
 			{...other}
 			aria-invalid={error ? 'true' : undefined}
-			class="text-sm pt-3 pb-1 px-3 rounded border w-full bg-inherit border-slate-800 p-2 focus:outline-none dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700 peer"
-			placeholder=" "
+			class={` pt-3 pb-1 px-3   w-full bg-inherit border-slate-800 p-2 focus:outline-none dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700  peer ${
+				bottomBorderOnly ? 'border-b-2' : 'rounded border focus:ring-2 focus:ring-forestgreen-700'
+			} ${massive ? 'text-2xl' : 'text-sm'}`}
+			placeholder={placeholder}
 			bind:value
 		/><br />
 		{#if label}

@@ -4,8 +4,8 @@
 	import StyledTextarea from '$lib/components/StyledTextarea.svelte';
 	import IExCircle from '$lib/icons/I_ExCircle.svelte';
 	import IExTriangle from '$lib/icons/I_ExTriangle.svelte';
-	import StyledInput from '../../lib/components/StyledInput.svelte';
-	import I_Info from '../../lib/icons/I_Info.svelte';
+	import StyledInput from '$lib/components/StyledInput.svelte';
+	import I_Info from '$lib/icons/I_Info.svelte';
 	import type { ActionData } from './$types';
 	import CountrySelect from './CountrySelect.svelte';
 

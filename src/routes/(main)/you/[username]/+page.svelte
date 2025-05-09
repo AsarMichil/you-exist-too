@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import ThoughtButton from '$lib/components/ThoughtButton.svelte';
 	import type { PageData } from './$types';
-	import ProfilePhotoUpload from '../../../lib/components/ProfilePhotoUpload.svelte';
+	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 
 	let { data }: { data: PageData } = $props();
 </script>
