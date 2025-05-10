@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { navigationDirection } from '$lib/stores/navigation';
+	import { onMount } from 'svelte';
+	import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, fly } from 'svelte/transition';
 
@@ -21,12 +23,14 @@
 
 	// Calculate progress percentage
 	let progress = $derived(((currentStepIndex + 1) / setupSteps.length) * 100);
-	let showBackButton = $derived(currentStepIndex > 1);
-	let backButtonStep = $derived(setupSteps[currentStepIndex - 1 > 0 ? currentStepIndex - 1 : 0]);
+	let showBackButton = $derived(currentStepIndex > 0);
+	let backButtonStep = $derived(setupSteps[currentStepIndex - 1 > 0 ? currentStepIndex - 1 : 1]);
 	let nextButtonStep = $derived(setupSteps[currentStepIndex + 1]);
+	let canGoForward = $derived(currentStepIndex < setupSteps.length - 1);
 
 	// Track navigation direction for transitions
 	let direction = $state('forward');
+	let isTransitioning = $state(false);
 
 	// Define transition parameters based on direction
 	let inTransition = $derived(
@@ -42,22 +46,85 @@
 		easing: cubicOut
 	});
 
+	// Total transition time in ms (delay + duration + safety margin)
+	const TRANSITION_TIME = 1000;
+
 	const goForward = () => {
-		direction = 'forward';
-		goto(nextButtonStep.id);
+		if (canGoForward && !isTransitioning) {
+			isTransitioning = true;
+			direction = 'forward';
+			goto(nextButtonStep.id);
+
+			// Reset the transitioning flag after transition completes
+			setTimeout(() => {
+				isTransitioning = false;
+			}, TRANSITION_TIME);
+		}
 	};
 
 	const goBack = () => {
-		direction = 'backward';
-		goto(backButtonStep.id);
+		if (!showBackButton) {
+			return;
+		}
+		if (showBackButton && !isTransitioning) {
+			isTransitioning = true;
+			direction = 'backward';
+			goto(backButtonStep.id);
+
+			// Reset the transitioning flag after transition completes
+			setTimeout(() => {
+				isTransitioning = false;
+			}, TRANSITION_TIME);
+		}
 	};
 
+	// For wheel/touchpad scrolling
+	let wheelTimeout: NodeJS.Timeout | null = null;
+	let isNavigating = false;
+	const handleWheel = (event: WheelEvent) => {
+		// Prevent default scrolling behavior
+		event.preventDefault();
+
+		// Only respond if we're not in the middle of a transition
+		if (!isTransitioning) {
+			// Track scroll direction
+			if (event.deltaY > 0) {
+				console.log('forward');
+				console.log(nextButtonStep);
+				goForward();
+			} else if (event.deltaY < 0) {
+				console.log('backward');
+				console.log(backButtonStep);
+				goBack();
+			}
+		}
+	};
+
+	onMount(() => {
+		// const mainElement = document.querySelector('main');
+		// if (mainElement) {
+		// 	mainElement.addEventListener('wheel', handleWheel, { passive: false });
+		// }
+
+		// return () => {
+		// 	if (mainElement) {
+		// 		mainElement.removeEventListener('wheel', handleWheel);
+		// 	}
+		// };
+	});
+	function swipeHandler(event: SwipeCustomEvent) {
+		console.log('swipe', event);
+		if (!isTransitioning) {
+			if (event.detail.direction === 'top') {
+				goForward();
+			} else if (event.detail.direction === 'bottom') {
+				goBack();
+			}
+		}
+	}
 </script>
 
-<div
-	class="flex flex-col h-svh dark:text-white"
-	data-page-id="setup"
->
+<div class="flex flex-col h-svh dark:text-white" data-page-id="setup">
 	<header class="border-b">
 		<!-- Progress bar -->
 		<div class="w-full bg-gray-200 h-1">
@@ -65,7 +132,12 @@
 		</div>
 	</header>
 
-	<main class="relative flex-grow" >
+	<main
+		class="relative flex-grow overflow-hidden"
+		use:swipe={() => ({ minSwipeDistance: 10 })}
+		onswipe={swipeHandler}
+		onwheel={handleWheel}
+	>
 		{#key page.url.pathname}
 			<div class="w-full h-full" in:fly={inTransition} out:fly={outTransition}>
 				{@render children()}
@@ -77,19 +149,15 @@
 		<div class="flex justify-between">
 			<div class="flex gap-2">
 				{#if showBackButton}
-					<button
-						class="bg-forestgreen-500 text-white px-4 py-2 rounded-md"
-						onclick={goBack}
-					>
+					<button class="bg-forestgreen-500 text-white px-4 py-2 rounded-md" onclick={goBack}>
 						Back
 					</button>
 				{/if}
-				<button
-					class="bg-forestgreen-500 text-white px-4 py-2 rounded-md"
-					onclick={goForward}
-				>
-					Next
-				</button>
+				{#if canGoForward}
+					<button class="bg-forestgreen-500 text-white px-4 py-2 rounded-md" onclick={goForward}>
+						Next
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
