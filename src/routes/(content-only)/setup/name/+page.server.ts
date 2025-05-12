@@ -20,10 +20,9 @@ export const load = async ({ locals }) => {
 		.select('preferred_name, given_name, family_name')
 		.eq('id', locals.user.id)
 		.single();
-	console.log('balls', profile);
+
 	if (profile && profile.preferred_name) {
 		const prefilled = await superValidate(profile, zod(schema));
-		console.log('prefilled', prefilled);
 		return { form: prefilled };
 	}
 
