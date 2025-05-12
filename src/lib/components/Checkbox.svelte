@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Checkbox, Label } from 'bits-ui';
-	import { Check, Minus } from 'lucide-svelte';
+	import { Check, Minus } from '@lucide/svelte';
 	import type { HTMLInputAttributes } from 'svelte/elements';
 
 	interface CheckboxProps extends HTMLInputAttributes {

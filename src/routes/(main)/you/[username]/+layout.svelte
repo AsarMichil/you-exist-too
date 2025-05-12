@@ -2,7 +2,7 @@
 	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 	import { flagEmoji } from '$lib/icons/FlagIcon';
 	import { Dialog, Separator } from 'bits-ui';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 
 	let { data, children } = $props();
 	let person = $derived(data.props?.person);

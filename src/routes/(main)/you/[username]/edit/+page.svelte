@@ -7,7 +7,7 @@
 	import Textarea from '$lib/components/Textarea.svelte';
 	import type { PageData } from './$types';
 	import { Dialog, Label, Separator } from 'bits-ui';
-	import { X } from 'lucide-svelte';
+	import { X } from '@lucide/svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	let { data }: { data: PageData } = $props();

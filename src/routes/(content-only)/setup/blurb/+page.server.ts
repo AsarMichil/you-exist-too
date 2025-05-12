@@ -21,9 +21,14 @@ export const load = async ({ locals }) => {
 		.select('blurb')
 		.eq('id', locals.user.id)
 		.single();
+	console.log('profile', profile);
+	let form;
+	if (profile?.blurb) {
+		form = await superValidate(profile, zod(schema));
+	} else {
+		form = await superValidate(zod(schema));
+	}
 
-	console.log('blrubr', profile);
-	const form = await superValidate(profile, zod(schema));
 	return { form };
 };
 

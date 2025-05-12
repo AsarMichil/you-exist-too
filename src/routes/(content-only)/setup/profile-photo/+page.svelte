@@ -11,9 +11,9 @@
 </script>
 
 <section class="flex flex-col w-full h-full justify-center items-center p-4 space-y-4">
-	<h1 class="font-mont text-2xl">Last Step, Upload a Profile Photo</h1>
-
 	<BorderedBox>
+		<h1 class="font-mont text-lg font-semibold">Last Step, Upload a Profile Photo</h1>
+
 		<div class="flex flex-col items-center justify-center">
 			<ProfilePhotoUpload
 				profile_photo_uri={data.profile_photo_uri}

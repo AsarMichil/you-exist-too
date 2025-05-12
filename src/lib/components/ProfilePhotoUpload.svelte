@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Slider, useId } from 'bits-ui';
-	import { LoaderCircle, Pencil, RotateCw } from 'lucide-svelte';
+	import { LoaderCircle, Pencil, RotateCw } from '@lucide/svelte';
 
 	let {
 		profile_photo_uri,

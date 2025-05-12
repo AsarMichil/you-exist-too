@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Checkbox from './Checkbox.svelte';
-	import { Heart, LoaderCircle } from 'lucide-svelte';
+	import { Heart, LoaderCircle } from '@lucide/svelte';
 
 	let { username, thoughtCount = 0 }: { username: string; thoughtCount: number } = $props();
 	let isLoggedIn = $state(false);

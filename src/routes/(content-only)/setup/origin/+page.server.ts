@@ -33,11 +33,13 @@ export const load = async ({ locals }) => {
 
 export const actions = {
 	default: async ({ request, locals }) => {
+		console.log("bro3");
 		if (!locals.user) {
 			throw redirect(302, '/login');
 		}
 
 		const form = await superValidate(request, zod(schema));
+		console.log("bro4", form);
 		if (!form.valid) {
 			return fail(400, { form });
 		}

@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import Input from '$lib/components/Input.svelte';
 	import type { PageData } from './$types';
-	import { ArrowBigDown, ArrowDown } from 'lucide-svelte';
+	import { ArrowBigDown, ArrowDown } from '@lucide/svelte';
 	import { tick } from 'svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 

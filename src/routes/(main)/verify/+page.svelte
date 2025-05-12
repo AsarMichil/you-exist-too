@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import BorderedBox from '$lib/components/BorderedBox.svelte';
-	import { Mail } from 'lucide-svelte';
+	import { Mail } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
 	let { data } = $props();

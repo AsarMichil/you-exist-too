@@ -47,7 +47,7 @@
 	});
 
 	// Total transition time in ms (delay + duration + safety margin)
-	const TRANSITION_TIME = 1000;
+	const TRANSITION_TIME = 1100;
 
 	const goForward = () => {
 		if (canGoForward && !isTransitioning) {
