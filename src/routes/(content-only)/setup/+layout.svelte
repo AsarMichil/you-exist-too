@@ -9,7 +9,6 @@
 		setTransitionDirection
 
 	} from '$lib/stores/setup.svelte';
-	import { url } from 'arktype/internal/keywords/string.ts';
 	import { cubicOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 
