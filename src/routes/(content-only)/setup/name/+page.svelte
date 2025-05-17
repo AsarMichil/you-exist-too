@@ -40,7 +40,7 @@
 							id="preferred_name"
 							bind:value={$form.preferred_name}
 							autocomplete="given-name"
-							placeholder="Asar"
+							placeholder="Preferred Name"
 						/>
 					</div>
 					{#if $errors.preferred_name}
@@ -61,7 +61,7 @@
 								id="given_name"
 								bind:value={$form.given_name}
 								autocomplete="given-name"
-								placeholder="Asar-Michil"
+								placeholder="First Name"
 							/>
 							<Input
 								bottomBorderOnly
@@ -71,7 +71,7 @@
 								id="family_name"
 								bind:value={$form.family_name}
 								autocomplete="family-name"
-								placeholder="Zuluev"
+								placeholder="Family Name"
 							/>
 						</div>
 					</ExpandableContent>

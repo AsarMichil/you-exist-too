@@ -68,7 +68,6 @@ export const actions = {
 		// Create the user's profile in the database
 		const person = await db.insertPersonEntry(form.data.username.toLowerCase(), locals.user.id);
 		console.log('yayyy', person);
-		// Redirect to the next step
-		return { success: true, nextStep: '/setup/password' };
+		return redirect(302, '/setup/password');
 	}
 };
