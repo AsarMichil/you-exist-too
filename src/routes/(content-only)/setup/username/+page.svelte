@@ -18,16 +18,13 @@
 	);
 
 	// Define routes for navigation
-	const backwardRoute = ''; // No back route for first page
-	const forwardRoute = 'name';
+	const forwardRoute = 'password';
 </script>
 
 <SetupNavigation
-	{backwardRoute}
 	{forwardRoute}
 	canGoBackward={false}
 	canGoForward={!!isValid}
-	progress={20}
 >
 	<section class="flex flex-col w-full h-full justify-center items-center p-4">
 		<BorderedBox>

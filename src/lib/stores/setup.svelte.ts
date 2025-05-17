@@ -28,6 +28,7 @@ export const getForwardRoute = () => {
 };
 
 export const getBackwardRoute = () => {
+	console.log('backwardRoute', backwardRoute);
 	return backwardRoute;
 };
 

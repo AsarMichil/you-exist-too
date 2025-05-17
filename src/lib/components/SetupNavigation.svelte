@@ -8,7 +8,6 @@
 		setTransitionDirection,
 		setTransitionTimeout
 	} from '../stores/setup.svelte';
-	import { onMount } from 'svelte';
 	import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 
 	const {
@@ -16,13 +15,16 @@
 		backwardRoute = '',
 		canGoForward = true,
 		canGoBackward = true,
-		progress = 0,
 		children
 	} = $props();
 
-	onMount(() => {
-		setForwardRoute(forwardRoute);
-		setBackwardRoute(backwardRoute);
+	$effect(() => {
+		if (canGoForward) {
+			setForwardRoute(forwardRoute);
+		}
+		if (canGoBackward) {
+			setBackwardRoute(backwardRoute);
+		}
 	});
 
 	// Total transition time in ms (delay + duration + safety margin)

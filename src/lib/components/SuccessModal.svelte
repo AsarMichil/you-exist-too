@@ -22,7 +22,7 @@
 				{title}
 			</Dialog.Title>
 			<Separator.Root class="bg-slate-800 dark:bg-white -mx-5 mb-6 mt-5 block h-px" />
-			<div class="text-slate-600 dark:text-slate-300">
+			<div class=" dark:text-white">
 				{@render children?.()}
 			</div>
 			<Dialog.Close

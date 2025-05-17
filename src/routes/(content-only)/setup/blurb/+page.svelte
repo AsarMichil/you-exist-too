@@ -1,27 +1,21 @@
 <script lang="ts">
 	import BorderedBox from '$lib/components/BorderedBox.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import Textarea from '$lib/components/Textarea.svelte';
 	import SetupNavigation from '$lib/components/SetupNavigation.svelte';
-	import { superForm } from 'sveltekit-superforms';
+	import Textarea from '$lib/components/Textarea.svelte';
 	import { setTransitionDirection } from '$lib/stores/setup.svelte.js';
+	import { superForm } from 'sveltekit-superforms';
 
 	let { data } = $props();
 	const { form, errors, enhance } = superForm(data.form);
 	console.log('form', $form, $errors);
-	
+
 	// Define routes for navigation
 	const backwardRoute = 'origin';
 	const forwardRoute = 'profile-photo';
 </script>
 
-<SetupNavigation
-	backwardRoute={backwardRoute}
-	forwardRoute={forwardRoute}
-	canGoBackward={true}
-	canGoForward={!!$form.blurb}
-	progress={80}
->
+<SetupNavigation {backwardRoute} {forwardRoute} canGoBackward={true} canGoForward={!!$form.blurb}>
 	<section class="flex flex-col w-full h-full justify-center items-center p-4 space-y-4">
 		<BorderedBox>
 			<h1 class="font-mont text-lg font-semibold">Write a short bio!</h1>
@@ -43,8 +37,8 @@
 					{/if}
 				</div>
 				<div class="text-sm">
-					*This will be displayed on your profile. You can share your interests, hobbies, or anything
-					else you'd like others to know about you.
+					*This will be displayed on your profile. You can share your interests, hobbies, or
+					anything else you'd like others to know about you.
 				</div>
 				<Button type="submit">Last Step</Button>
 			</form>

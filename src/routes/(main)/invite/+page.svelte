@@ -37,7 +37,6 @@
 				name="contactInfo"
 				type="text"
 				bind:value={$form.contactInfo}
-				placeholder="Enter their email or phone number"
 				error={$errors.contactInfo}
 			/>
 			<Input
@@ -64,16 +63,20 @@
 		</form>
 	</BorderedBox>
 </div>
+
 {#if $message}
 	<SuccessModal open={true} title="Invitation Sent">
-		<div class="flex items-center">
-			<div class="w-3/5">
-				<p class="text-lg">Hooray!</p>
-				<p class="text-lg">Your invitation has been sent successfully!</p>
-			</div>
-			<div class="w-2/5 dark:stroke-white dark:fill-white">
+		<div class="flex flex-col">
+			<div class="w-full dark:stroke-white dark:fill-white flex justify-center items-center">
+			<div class="w-48">
 				<BearHappy />
 			</div>
+		</div>
+		<div class="w-full font-gar">
+			<p class="text-xl">
+				Your invitation has been sent successfully! They'll receive an email with a link to join
+				you.
+			</p>
 		</div>
 	</SuccessModal>
 {/if}

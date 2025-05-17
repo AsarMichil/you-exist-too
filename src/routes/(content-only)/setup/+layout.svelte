@@ -4,7 +4,10 @@
 	import {
 		getForwardRoute,
 		getBackwardRoute,
-		getTransitionDirection
+		getTransitionDirection,
+
+		setTransitionDirection
+
 	} from '$lib/stores/setup.svelte';
 	import { url } from 'arktype/internal/keywords/string.ts';
 	import { cubicOut } from 'svelte/easing';
@@ -13,6 +16,7 @@
 	let { children } = $props();
 	let setupSteps = [
 		{ id: 'username', label: 'Username' },
+		{ id: 'password', label: 'Password' },
 		{ id: 'name', label: 'Name' },
 		{ id: 'origin', label: 'Origin' },
 		{ id: 'blurb', label: 'Blurb' },
@@ -67,6 +71,7 @@
 						onclick={() => {
 							const where = getBackwardRoute();
 							if (where !== null) {
+								setTransitionDirection('backward');
 								goto(where);
 							}
 						}}
@@ -81,6 +86,7 @@
 						onclick={() => {
 							const where = getForwardRoute();
 							if (where !== null) {
+								setTransitionDirection('forward');
 								goto(where);
 							}
 						}}
@@ -88,7 +94,7 @@
 						Next
 					</button>
 				{/if}
-				{#if page.url.pathname === '/setup/profile-photo'}
+				{#if page.url.pathname === '/setup/profile-photo' && !!getForwardRoute()}
 					<button
 						class="bg-forestgreen-500 text-white px-4 py-2 rounded-md"
 						onclick={() => {

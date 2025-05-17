@@ -30,6 +30,7 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 			console.error('Error fetching person:', error);
 			throw redirect(302, '/setup/username');
 		}
+		// if no password no real way to check this... maybe TODO
 
 		if (!person.preferred_name) {
 			throw redirect(302, '/setup/name');

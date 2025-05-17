@@ -16,12 +16,7 @@
 	const forwardRoute = 'origin';
 </script>
 
-<SetupNavigation
-	{forwardRoute}
-	canGoBackward={false}
-	canGoForward={!!$form.preferred_name}
-	progress={40}
->
+<SetupNavigation {forwardRoute} canGoBackward={false} canGoForward={!!$form.preferred_name}>
 	<section class="flex flex-col w-full h-full justify-center items-center p-4">
 		<BorderedBox>
 			<h1 class=" font-mont text-lg font-semibold w-full">What should people call you?</h1>
@@ -32,7 +27,7 @@
 				class="space-y-4"
 				onsubmit={() => {
 					setTransitionDirection('forward');
-				}}	
+				}}
 			>
 				<div>
 					<div class="flex gap-2 items-baseline">

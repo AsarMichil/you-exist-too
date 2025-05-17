@@ -69,6 +69,6 @@ export const actions = {
 		const person = await db.insertPersonEntry(form.data.username.toLowerCase(), locals.user.id);
 		console.log('yayyy', person);
 		// Redirect to the next step
-		return { success: true, nextStep: '/setup/name' };
+		return { success: true, nextStep: '/setup/password' };
 	}
 };
