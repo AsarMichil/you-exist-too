@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 
 	let { data, children } = $props();
-	let { supabase, session } = data;
+	let { supabase, session } = $derived(data);
 	let theme = createTheme();
 
 	onMount(() => {
@@ -24,8 +24,21 @@
 			<h1 class="font-gar text-2xl"><a href="/">You Exist.</a></h1>
 		</div>
 		<div class="flex justify-end items-center">
+			{#if session}
+				<div class="mr-2">
+					<h1 class="text-xl font-gar px-2">
+						<a
+							data-sveltekit-reload
+							href="/signout"
+							class="focus:outline-brownish-500 dark:focus:outline-brownish-100 focus:outline focus:rounded"
+						>
+							Sign Out
+						</a>
+					</h1>
+				</div>
+			{/if}
 			<div class="mr-2">
-				<h1 class="text-xl font-mon px-2">
+				<h1 class="text-xl font-gar px-2">
 					<a
 						href="/about"
 						class="focus:outline-brownish-500 dark:focus:outline-brownish-100 focus:outline focus:rounded"
