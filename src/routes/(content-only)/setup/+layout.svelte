@@ -5,9 +5,7 @@
 		getForwardRoute,
 		getBackwardRoute,
 		getTransitionDirection,
-
 		setTransitionDirection
-
 	} from '$lib/stores/setup.svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
@@ -93,7 +91,7 @@
 						Next
 					</button>
 				{/if}
-				{#if page.url.pathname === '/setup/profile-photo' && !!getForwardRoute()}
+				{#if page.url.pathname === '/setup/profile-photo'}
 					<button
 						class="bg-forestgreen-500 text-white px-4 py-2 rounded-md"
 						onclick={() => {
