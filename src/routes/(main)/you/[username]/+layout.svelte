@@ -1,8 +1,8 @@
 <script lang="ts">
 	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 	import { flagEmoji } from '$lib/icons/FlagIcon';
+	import { Pencil, X } from '@lucide/svelte';
 	import { Dialog, Separator } from 'bits-ui';
-	import { X } from '@lucide/svelte';
 
 	let { data, children } = $props();
 	let person = $derived(data.props?.person);
@@ -41,9 +41,10 @@
 				<a
 					data-sveltekit-preload-data="hover"
 					href="/you/{person?.username}/edit"
-					class="border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
+					class="flex gap-1 w-fit border-slate-800 border-2 rounded-md py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
 				>
-					Edit Profile
+					<Pencil class="size-4 inline self-center" />
+					<span class="text-nowrap"> Edit Profile </span>
 				</a>
 			</div>
 		{/if}

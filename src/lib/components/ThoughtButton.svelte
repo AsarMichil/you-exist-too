@@ -1,13 +1,30 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Checkbox from './Checkbox.svelte';
 	import { Heart, LoaderCircle } from '@lucide/svelte';
 
 	let { username, thoughtCount = 0 }: { username: string; thoughtCount: number } = $props();
 	let isLoggedIn = $state(false);
+	let loggedInUsername = $state(null);
 	let isAnonymous = $state(false);
 	let isSubmitting = $state(false);
 	let ambitiousThoughtCount = $state(thoughtCount);
-
+	const introspectiveAlerts = [
+		'Feeling introspective? We get it.',
+		'Self-reflection is healthy!',
+		'Thinking about yourself? Profound.',
+		"Sorry, you can't send yourself a thought. Your brain might explode!",
+		'Plot twist: You were the one you were thinking about all along.',
+		"Congratulations! You've discovered self-awareness!",
+		'You already think about yourself plenty. Trust us!',
+		"You're already living rent-free in your own head!",
+		"Whoops! You can't think about yourself. That's just called thinking.",
+		'Nice try! But thinking about yourself is just called consciousness.',
+		"Hold up! You can't think about yourself. That's just regular thinking with extra steps.",
+		"Congratulations, you've discovered thinking.",
+		"You don't need a button for that. Trust us."
+	];
+	let currentAlertIdx = $state(0);
 	// Check if user is logged in
 	$effect(() => {
 		const checkAuth = async () => {
@@ -15,6 +32,7 @@
 				const response = await fetch('/api/auth/status');
 				const data = await response.json();
 				isLoggedIn = data.isLoggedIn;
+				loggedInUsername = data.username;
 			} catch (error) {
 				console.error('Error checking auth status:', error);
 				isLoggedIn = false;
@@ -23,8 +41,14 @@
 
 		checkAuth();
 	});
+	let isThemselves = $derived(username === loggedInUsername);
 
 	async function addThought() {
+		if (isThemselves) {
+			alert(introspectiveAlerts[currentAlertIdx]);
+			currentAlertIdx = (currentAlertIdx + 1) % introspectiveAlerts.length;
+			return;
+		}
 		try {
 			// increment the thought count locally
 			ambitiousThoughtCount += 1;
