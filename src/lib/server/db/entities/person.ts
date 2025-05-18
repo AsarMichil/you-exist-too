@@ -1,10 +1,10 @@
 import type { Person } from '$lib/types/person';
-import { Database } from '../db';
+import { Server } from '../db';
 
 export const person = {
 	// Get person by ID
 	getPersonById: async (id: string) => {
-		const { data, error } = await Database.client.from('person').select('*').eq('id', id).single();
+		const { data, error } = await Server.client.from('person').select('*').eq('id', id).single();
 
 		if (error) throw error;
 		return data;
@@ -12,7 +12,7 @@ export const person = {
 
 	// Get person by username
 	getPersonByUsername: async (username: string) => {
-		const { data, error } = await Database.client
+		const { data, error } = await Server.client
 			.from('person')
 			.select('*')
 			.eq('username', username.toLowerCase())
@@ -24,7 +24,7 @@ export const person = {
 
 	// Create new person
 	createPerson: async (person: Person) => {
-		const { data, error } = await Database.client
+		const { data, error } = await Server.client
 			.from('person')
 			.insert({
 				...person,
@@ -39,7 +39,7 @@ export const person = {
 
 	// Check if username exists
 	personExists: async (username: string) => {
-		const { data, error } = await Database.client
+		const { data, error } = await Server.client
 			.from('person')
 			.select('id')
 			.eq('username', username.toLowerCase());
@@ -50,7 +50,7 @@ export const person = {
 
 	// Update person
 	updatePerson: async (id: string, person: Partial<Person>) => {
-		const { data, error } = await Database.client
+		const { data, error } = await Server.client
 			.from('person')
 			.update({
 				...person,
@@ -66,7 +66,7 @@ export const person = {
 
 	// Delete person
 	deletePerson: async (id: string) => {
-		const { error } = await Database.client.from('person').delete().eq('id', id);
+		const { error } = await Server.client.from('person').delete().eq('id', id);
 
 		if (error) throw error;
 		return true;
@@ -74,7 +74,7 @@ export const person = {
 
 	// Get all persons
 	getAllPersons: async () => {
-		const { data, error } = await Database.client.from('person').select('*');
+		const { data, error } = await Server.client.from('person').select('*');
 
 		if (error) throw error;
 		return data;
@@ -82,7 +82,7 @@ export const person = {
 
 	// Search person by name
 	getPersonByGivenOrFamilyOrPreferredName: async (name: string) => {
-		const { data, error } = await Database.client
+		const { data, error } = await Server.client
 			.from('person')
 			.select('*')
 			.or(`given_name.eq.${name},family_name.eq.${name},preferred_name.eq.${name}`);

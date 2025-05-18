@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/components/Button.svelte';
 	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 	import { flagEmoji } from '$lib/icons/FlagIcon';
 	import { Pencil, X } from '@lucide/svelte';

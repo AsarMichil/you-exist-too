@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db';
-import { Database } from '$lib/server/db/db';
+import { Server } from '$lib/server/db/db';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request, locals: { safeGetSession } }) {
@@ -11,7 +11,7 @@ export async function POST({ request, locals: { safeGetSession } }) {
 		}
 
 		// Get the person being thought about
-		const { data: personData, error: personError } = await Database.client
+		const { data: personData, error: personError } = await Server.client
 			.from('person')
 			.select('id, username')
 			.eq('username', username.toLowerCase())
@@ -32,7 +32,7 @@ export async function POST({ request, locals: { safeGetSession } }) {
 		}
 
 		// Insert thought into the thought table
-		const { error: thoughtError } = await Database.client.from('thought').insert({
+		const { error: thoughtError } = await Server.client.from('thought').insert({
 			about: aboutUsername,
 			thinker: thinkerId,
 			created_at: new Date().toISOString()
@@ -44,14 +44,14 @@ export async function POST({ request, locals: { safeGetSession } }) {
 		}
 		// if logged in, increment user's thoughts_thought count
 		if (user && !isAnonymous) {
-			const { data: thoughtsCount, error: thoughtsCountError } = await Database.client
+			const { data: thoughtsCount, error: thoughtsCountError } = await Server.client
 				.from('person')
 				.select('thoughts_thought')
 				.eq('id', thinkerId)
 				.single();
 
 			// Increment thoughts_thought column in person table
-			const { error: updateError } = await Database.client
+			const { error: updateError } = await Server.client
 				.from('person')
 				.update({
 					thoughts_thought: thoughtsCount?.thoughts_thought ? thoughtsCount.thoughts_thought + 1 : 1

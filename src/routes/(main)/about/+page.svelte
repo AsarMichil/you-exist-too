@@ -15,12 +15,12 @@
 			<div class="">
 				<p class="font-mont">
 					One night I thought about one of my friends from back home, and I wondered if they thought
-					about me too. That desire to be known, to be missed was strong! And so, I made this
+					about me too. That desire to be known, to be missed was killer! And so, I made this
 					website.
 				</p>
 				<p class="font-mont">
 					This website aims to fill that gap between never thinking about someone and thinking about
-					someone enough to reach out.
+					someone enough to reach out. Thoughts are too transient.
 				</p>
 				<p class="font-mont">
 					It allows you to click a button to say you thought about someone, and if you sign up for

@@ -1,11 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import BorderedBox from '$lib/components/BorderedBox.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
+	import HappyBearModal from '$lib/components/HappyBearModal.svelte';
 	import Input from '$lib/components/Input.svelte';
-	import SuccessModal from '$lib/components/SuccessModal.svelte';
-	import BearHappy from '$lib/icons/BearHappy.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	let { data } = $props();
@@ -65,18 +63,7 @@
 </div>
 
 {#if $message}
-	<SuccessModal open={true} title="Invitation Sent">
-		<div class="flex flex-col">
-			<div class="w-full dark:stroke-white dark:fill-white flex justify-center items-center">
-			<div class="w-48">
-				<BearHappy />
-			</div>
-		</div>
-		<div class="w-full font-gar">
-			<p class="text-xl">
-				Your invitation has been sent successfully! They'll receive an email with a link to join
-				you.
-			</p>
-		</div>
-	</SuccessModal>
+	<HappyBearModal open={true} title="Invitation Sent">
+		Your invitation has been sent successfully! They'll receive an email with a link to create an account.
+	</HappyBearModal>
 {/if}

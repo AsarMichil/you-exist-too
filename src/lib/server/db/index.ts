@@ -1,4 +1,4 @@
-import { Database } from './db';
+import { Server } from './db';
 
-export const db = Database.connect();
-export const client = Database.client;
+export const db = Server.connect();
+export const client = Server.client;

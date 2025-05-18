@@ -1,4 +1,4 @@
-import { Database } from '$lib/server/db/db';
+import { Server } from '$lib/server/db/db';
 import { json } from '@sveltejs/kit';
 
 export async function GET({ url }) {
@@ -11,7 +11,7 @@ export async function GET({ url }) {
 	try {
 		console.log('username', username);
 		// Get the person ID
-		const { data: personData, error: personError } = await Database.client
+		const { data: personData, error: personError } = await Server.client
 			.from('thought')
 			.select('*', { count: 'exact', head: true })
 			.eq('about', username.toLowerCase());

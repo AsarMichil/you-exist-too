@@ -101,7 +101,7 @@
 			label="Make my thought anonymous"
 			id="anonymous-thought"
 			bind:checked={isAnonymous}
-			class="rounded border-slate-800 dark:border-white focus:ring-forestgreen-700 text-forestgreen-700"
+			class="rounded border-slate-800 dark:border-white hocus:ring-forestgreen-700 text-forestgreen-700 dark:text-white"
 		/>
 	{/if}
 </div>

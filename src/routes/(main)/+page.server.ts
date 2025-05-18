@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 		try {
 			const searchResult = await db.searchPerson(searchQuery);
 			if (searchResult.data && searchResult.data.length > 0) {
-				results = searchResult.data;
+				results = searchResult.data as Person[];
 			} else {
 				results = [];
 			}

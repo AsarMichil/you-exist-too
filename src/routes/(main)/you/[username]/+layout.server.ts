@@ -2,7 +2,7 @@ import { client, db } from '$lib/server/db';
 import type { Person, PersonWithId } from '$lib/server/db/types';
 import { nullsToUndefined } from '$lib/types/utils';
 import type { LayoutServerLoad } from './$types';
-import { fail } from '@sveltejs/kit';
+import { fail, type Actions } from '@sveltejs/kit';
 
 export const load: LayoutServerLoad = async ({ params, locals: { safeGetSession } }) => {
 	const { data, error } = await client.from('person').select('*').eq('username', params.username);

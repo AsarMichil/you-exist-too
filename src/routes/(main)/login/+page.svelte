@@ -55,8 +55,10 @@
 			>
 		</form>
 		<p class="mt-3 mb-2 text-center text-forestgreen-700 dark:text-slate-200 font-bold font-gar">
-			<a href="login/forgot-password" class="text-center hocus:text-forestgreen-500"
-				>Forgot your password?</a
+			<a
+				href="login/forgot-password"
+				class="underline text-center hocus:text-forestgreen-500"
+				data-sveltekit-preload-data>I don't have my password</a
 			>
 		</p>
 	</div>

@@ -8,5 +8,5 @@ export interface Person {
 	blurb: string;
 	username: string;
 	social_media_handles: object;
-	birthdate: Date;
+	birthdate: string; // 
 }

@@ -1,4 +1,4 @@
-import { Database } from '$lib/server/db/db';
+import { Server } from '$lib/server/db/db';
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 
 	// Check if the user exists
-	const { data: personData, error: personError } = await Database.client
+	const { data: personData, error: personError } = await Server.client
 		.from('person')
 		.select('id, username, preferred_name, given_name, thoughts_thought')
 		.eq('username', username.toLowerCase())

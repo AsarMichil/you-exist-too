@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import type { Database } from '$lib/database.types';
 // import type { ExecutedQuery } from '@planetscale/database';
 import type { Person } from './types';
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
@@ -16,31 +17,31 @@ const cloudFrontUrl = 'https://d1deenjh0g4q0v.cloudfront.net';
 // 	password: env.PLANETSCALE_DB_DEV_PASSWORD
 // };
 
-export class Database {
+export class Server {
 	// private static connection: Connection;
-	static instance: Database;
-	static client: SupabaseClient;
+	static instance: Server;
+	static client: SupabaseClient<Database>;
 	static s3Client: S3Client;
 
 	private constructor() {
 		// connect to database
 		// Database.connection = connect(config);
-		Database.client = createClient(supabaseUrl, supabaseKey!);
-		Database.s3Client = new S3Client({
+		Server.client = createClient<Database>(supabaseUrl, supabaseKey!);
+		Server.s3Client = new S3Client({
 			region: 'us-west-1',
 			credentials: {
 				accessKeyId: env.AWS_ACCESS_KEY_ID,
 				secretAccessKey: env.AWS_SECRET_ACCESS_KEY
 			}
 		});
-		return Database.instance;
+		return Server.instance;
 	}
 
 	public static connect() {
-		if (!Database.instance) {
-			Database.instance = new Database();
+		if (!Server.instance) {
+			Server.instance = new Server();
 		}
-		return Database.instance;
+		return Server.instance;
 	}
 	// // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	// private static async query(sql: string, values: any): Promise<ExecutedQuery> {
@@ -49,78 +50,36 @@ export class Database {
 	// }
 
 	public async getAllPerson() {
-		return await Database.client.from('person').select('*');
+		return await Server.client.from('person').select('*');
 	}
 
 	public async getPersonById(id: string) {
-		return await Database.client.from('person').select('*').eq('id', id);
+		return await Server.client.from('person').select('*').eq('id', id);
 		//  Database.query('SELECT * FROM person WHERE id = ?;', [id]);
 	}
 
 	public async getPersonByUsername(username: string) {
 		username = username.toLowerCase();
-		return await Database.client.from('person').select('*').eq('username', username);
+		return await Server.client.from('person').select('*').eq('username', username);
 		// return Database.query('SELECT * FROM person WHERE username = ?;', [username]);
-	}
-
-	public async createPerson({
-		given_name,
-		family_name,
-		preferred_name,
-		country,
-		profile_photo_id,
-		blurb,
-		username,
-		social_media_handles,
-		birthdate
-	}: Person) {
-		username = username.toLowerCase();
-
-		return Database.client.from('person').insert({
-			given_name: given_name,
-			family_name: family_name,
-			preferred_name: preferred_name,
-			country,
-			profile_photo_id: profile_photo_id,
-			blurb: blurb,
-			username: username,
-			social_media_handles: social_media_handles,
-			birthdate
-		});
-
-		// return await Database.query(
-		// 	'INSERT INTO person (given_name, family_name, preferred_name, country_id, profile_photo_id, blurb, username, instagram_handle, tiktok_handle, birthdate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);',
-		// 	[
-		// 		given_name,
-		// 		family_name,
-		// 		preferred_name,
-		// 		country_id,
-		// 		profile_photo_id,
-		// 		blurb,
-		// 		username,
-		// 		instagram_handle,
-		// 		tiktok_handle,
-		// 		birthdate
-		// 	]
-		// );
 	}
 
 	public async personExists(username: string) {
 		username = username.toLowerCase();
-		const res = await Database.client.from('person').select('*').eq('username', username);
+		const res = await Server.client.from('person').select('*').eq('username', username);
 		return res.data && res.data.length > 0;
 	}
 	public async insertPersonEntry(username: string, id: string) {
 		username = username.toLowerCase();
-		return await Database.client.from('person').insert({ username: username, id: id });
+		return await Server.client.from('person').insert({ username: username, id: id });
 	}
 	public async getPersonEmail(username: string) {
 		username = username.toLowerCase();
-		const res = await Database.client.from('person').select('id').eq('username', username);
+		const res = await Server.client.from('person').select('id').eq('username', username);
 		if (!res.data || res.data.length === 0) {
 			return null;
 		}
-		const { error, data } = await Database.client.auth.admin.getUserById(res.data![0].id);
+		const { error, data } = await Server.client.auth.admin.getUserById(res.data![0].id);
 		if (error) {
 			return null;
 		}
@@ -129,12 +88,22 @@ export class Database {
 
 	public async updatePerson(id: string, p: Partial<Person>) {
 		if (p.username) p.username = p.username.toLowerCase();
+		let social_media_handles;
+		if (p.social_media_handles) {
+			social_media_handles = JSON.stringify(p.social_media_handles);
+		}
 
-		return await Database.client.from('person').update(p).eq('id', id);
+		return await Server.client
+			.from('person')
+			.update({
+				...p,
+				social_media_handles: social_media_handles
+			})
+			.eq('id', id);
 	}
 
 	public async getPersonByGivenOrFamilyOrPreferredName(name: string) {
-		return await Database.client
+		return await Server.client
 			.from('person')
 			.select('*')
 			.or(`given_name.eq.${name},family_name.eq.${name},preferred_name.eq.${name}`);
@@ -146,7 +115,7 @@ export class Database {
 	}
 
 	public async getPersonByGivenAndFamilyName(givenName: string, familyName: string) {
-		return await Database.client
+		return await Server.client
 			.from('person')
 			.select('*')
 			.eq('given_name', givenName)
@@ -158,7 +127,7 @@ export class Database {
 	}
 
 	public async getPersonByPreferredName(name: string) {
-		return await Database.client.from('person').select('*').eq('preferred_name', name);
+		return await Server.client.from('person').select('*').eq('preferred_name', name);
 
 		// return (await Database.query('SELECT * FROM person WHERE preferred_name = ?;', [
 		// 	name
@@ -175,8 +144,8 @@ export class Database {
 			Key: photo_id
 		});
 		try {
-			await Database.s3Client.send(deleteObject);
-			const db_res = Database.client.from('person').update({ profile_photo_id: null }).eq('id', id);
+			await Server.s3Client.send(deleteObject);
+			const db_res = Server.client.from('person').update({ profile_photo_id: null }).eq('id', id);
 			return db_res;
 		} catch (err) {
 			console.error(err);
@@ -194,9 +163,9 @@ export class Database {
 			ACL: 'public-read'
 		});
 		try {
-			await Database.s3Client.send(putobject);
+			await Server.s3Client.send(putobject);
 
-			const db_res = await Database.client
+			const db_res = await Server.client
 				.from('person')
 				.update({ profile_photo_id: image_id })
 				.eq('id', id);
@@ -210,20 +179,20 @@ export class Database {
 		}
 	}
 	public async logIp(ip: string) {
-		return await Database.client.from('logs').insert({ ip });
+		return await Server.client.from('logs').insert({ ip });
 	}
 
 	public async vectorSearchPerson(query: string) {
-		return await Database.client.from('person').select('*').textSearch('search_vector', query);
+		return await Server.client.from('person').select('*').textSearch('search_vector', query);
 	}
-	public async searchPerson(query: string): Promise<{ data: Person[] | null; error: any }> {
-		return await Database.client.rpc('search_person', {
+	public async searchPerson(query: string) {
+		return await Server.client.rpc('search_person', {
 			search_term: query,
 			is_autocomplete: false
 		});
 	}
 	public async searchAutocomplete(query: string) {
-		return await Database.client.rpc('search_person', {
+		return await Server.client.rpc('search_person', {
 			search_term: query,
 			is_autocomplete: true
 		});

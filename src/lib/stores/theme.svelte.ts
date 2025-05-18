@@ -1,5 +1,4 @@
 import { onMount } from 'svelte';
-
 export function createTheme() {
 	let theme = $state('light');
 
@@ -30,6 +29,7 @@ export function createTheme() {
 		}
 	};
 }
+export type Theme = ReturnType<typeof createTheme>;
 // toggleTheme() {
 
 //     theme = theme === 'light' ? 'dark' : 'light';
