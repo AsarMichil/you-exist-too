@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import {
 		getForwardRoute,
 		getBackwardRoute,
 		getTransitionDirection,
 		setTransitionDirection
 	} from '$lib/stores/setup.svelte';
+	import { createTheme } from '$lib/stores/theme.svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fly } from 'svelte/transition';
 
@@ -41,9 +43,10 @@
 	console.log('page pathname', page.url.pathname);
 	// Calculate progress percentage
 	let progress = $derived(((currentStepIndex + 1) / setupSteps.length) * 100);
+	let theme = createTheme();
 </script>
 
-<div class="flex flex-col h-svh dark:text-white overflow-hidden" data-page-id="setup">
+<div class="relative h-svh dark:text-white overflow-hidden" data-page-id="setup">
 	<header class="border-b">
 		<!-- Progress bar -->
 		<div class="w-full bg-gray-200 h-1">
@@ -103,5 +106,8 @@
 				{/if}
 			</div>
 		</div>
+	</div>
+	<div class="absolute top-4 right-4">
+		<ThemeToggle {theme} />
 	</div>
 </div>
