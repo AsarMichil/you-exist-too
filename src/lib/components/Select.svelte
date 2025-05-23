@@ -41,11 +41,10 @@
 		states: { open, inputValue, selected },
 		helpers: { isSelected }
 	} = createCombobox({
-		defaultSelected: options.find((opt) => opt.value === value) || options[0],
 		onSelectedChange: ({ next }) => {
 			if (next) {
 				console.log('bro', next);
-				value = next.value;
+				value = next.value as string;
 				console.log('bro2', value);
 			}
 			return next;
@@ -53,6 +52,7 @@
 	});
 
 	$effect(() => {
+		console.log('bro3', $open,  $selected?.label);
 		if (!$open) {
 			$inputValue = $selected?.label ?? '';
 		}
