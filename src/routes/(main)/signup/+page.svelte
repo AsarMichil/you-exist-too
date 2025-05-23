@@ -44,8 +44,8 @@
 		{#if existingEmail}
 			<div class="space-y-4">
 				<p class="text-center">An account with this email already exists.</p>
-				<Button on:click={() => handleResetPassword()}>Reset Password</Button>
-				<Button on:click={() => (existingEmail = false)} class="bg-gray-200"
+				<Button onclick={() => handleResetPassword()}>Reset Password</Button>
+				<Button onclick={() => (existingEmail = false)} class="bg-gray-200"
 					>Try Different Email</Button
 				>
 			</div>

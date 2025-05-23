@@ -157,8 +157,8 @@
 					}}
 				>
 					<div>
-						<h2 class="text-xl">{p.given_name} {p.family_name}</h2>
-						<p class="text-sm text-slate-600 dark:text-slate-300">@{p.username}</p>
+						<h2 class="text-2xl">{p.given_name} {p.family_name}</h2>
+						<p class=" text-slate-700 dark:text-slate-200">@{p.username}</p>
 					</div>
 				</button>
 			{/each}
@@ -170,8 +170,8 @@
 			}}
 		>
 			<div>
-				<h2 class="text-xl">Thinking about someone else?</h2>
-				<p class="text-sm text-slate-600 dark:text-slate-300">
+				<h2 class="text-2xl">Thinking about someone else?</h2>
+				<p class="text-slate-700 dark:text-slate-200">
 					If you know the email or phone number of the person you're looking for, we can send them
 					an invite.
 				</p>

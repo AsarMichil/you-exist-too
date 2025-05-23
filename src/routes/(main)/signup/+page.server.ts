@@ -48,14 +48,14 @@ export const actions = {
 			if (existingUser) {
 				return setError(form, 'username', 'Sorry! That username is already taken.');
 			}
-			console.log('redirect url', `${new URL(request.url).origin}/setup`);
+			console.log('redirect url', `${new URL(request.url).hostname}/setup`);
 			// Attempt to create a new user with Supabase Auth
 			const { data, error } = await stealHash({
 				type: 'signup',
 				email: form.data.email,
 				password: crypto.randomUUID(), // Generate a random password for passwordless auth
 				options: {
-					redirectTo: `${new URL(request.url).origin}/setup`
+					redirectTo: `${new URL(request.url).hostname}/setup`
 				}
 			});
 
@@ -68,7 +68,7 @@ export const actions = {
 				form.data.email,
 				form.data.username,
 				generateEmailLink({
-					site_url: new URL(request.url).origin,
+					site_url: new URL(request.url).hostname,
 					email_action_type: 'signup',
 					redirect_to: `${request.url}/setup`,
 					token_hash: data.token_hash
@@ -93,6 +93,6 @@ export const actions = {
 			return fail(500, { form, message: 'An unexpected error occurred' });
 		}
 
-		return redirect(302, '/verify');
+		return redirect(302, `/verify?email=${form.data.email}`);
 	}
 };

@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Check, ChevronDown, ChevronUp } from '@lucide/svelte';
 	import { createCombobox, type ComboboxOptionProps } from '@melt-ui/svelte';
-	import { Label } from 'bits-ui';
-	import type { HTMLButtonAttributes, HTMLSelectAttributes } from 'svelte/elements';
+	import type { HTMLSelectAttributes } from 'svelte/elements';
 	import { fly } from 'svelte/transition';
 
 	interface SelectProps extends HTMLSelectAttributes {
@@ -89,9 +88,9 @@
 	</div>
 
 	{#if $open}
-		<div class="relative">
+		<div class="relative z-50">
 			<ul
-				class="absolute left-0 right-0 z-10 mt-1 flex max-h-[300px] flex-col rounded-lg border border-slate-300 dark:border-slate-600 shadow-md overflow-y-auto dark:text-white bg-white dark:bg-stone-900"
+				class="z-50 absolute left-0 right-0 mt-1 flex max-h-[300px] flex-col rounded-lg border border-slate-300 dark:border-slate-600 shadow-md overflow-y-auto dark:text-white bg-white dark:bg-stone-900"
 				{...$menu}
 				use:menu
 				transition:fly={{ duration: 150, y: -5 }}
@@ -103,7 +102,7 @@
 						class="relative cursor-pointer scroll-my-2 py-2 pl-4 pr-4 hover:bg-slate-100 dark:hover:bg-slate-800"
 					>
 						{#if $isSelected(thingy)}
-							<div class="check absolute left-2 top-1/2 z-10 -translate-y-1/2">
+							<div class="check absolute left-2 top-1/2 z-50 -translate-y-1/2">
 								<Check class="size-4" />
 							</div>
 						{/if}

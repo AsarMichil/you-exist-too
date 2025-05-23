@@ -38,10 +38,11 @@ export const load: LayoutServerLoad = async ({ params, locals: { safeGetSession 
 
 	return {
 		props: {
-			person: person as Person,
+			person,
 			profile_photo_uri: profile_photo_uri,
 			own: user?.id === person.id,
 			thoughtCount: count
 		}
 	};
 };
+

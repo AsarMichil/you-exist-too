@@ -1,11 +1,72 @@
 import { client, db } from '$lib/server/db';
 import type { PersonWithId } from '$lib/server/db/types';
 import type { Actions } from './$types';
+import type { ReturnType } from '@sinclair/typebox';
 import { fail } from '@sveltejs/kit';
 import { nanoid } from 'nanoid';
 
-// The load function is no longer needed as we're using the layout data
-// All data is now loaded in +layout.server.ts
+export const load = async ({ params, locals: { safeGetSession }, parent, url }) => {
+	const { props } = await parent();
+	if (!props || !props.own) {
+		return {
+			props
+		};
+	}
+	let page: number;
+	let limit: number;
+	const pageParam = url.searchParams.get('page');
+	const limitParam = url.searchParams.get('limit');
+	page = pageParam ? parseInt(pageParam) : 1;
+	limit = limitParam ? parseInt(limitParam) : 40;
+
+	const thoughts = getPaginatedThoughts(params.username, page, limit);
+	return {
+		props,
+		thoughts
+	};
+};
+
+async function getPaginatedThoughts(username: string, page: number, limit: number) {
+	const { data: person, error: personError } = await client
+		.from('person')
+		.select('username')
+		.eq('username', username)
+		.single();
+	if (personError) {
+		return { error: personError };
+	}
+	const offset = (page - 1) * limit;
+	const {
+		data: thoughts,
+		error,
+		count
+	} = await client
+		.from('thought')
+		.select(
+			'id, about, thinker, created_at, person!thought_thinker_fkey(id, username, given_name, preferred_name)',
+			{
+				count: 'exact'
+			}
+		)
+		.eq('about', person.username)
+		.not('thinker', 'is', null)
+		.range(offset, offset + limit - 1);
+
+	if (error) {
+		return { error: error };
+	}
+
+	return {
+		thoughts,
+		pagination: {
+			page,
+			limit,
+			total: count,
+			pages: Math.ceil((count || 0) / limit)
+		},
+		error: null
+	};
+}
 
 export const actions: Actions = {
 	uploadProfilePhoto: async ({ request, locals: { safeGetSession } }) => {

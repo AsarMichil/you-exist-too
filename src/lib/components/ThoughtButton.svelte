@@ -91,9 +91,9 @@
 		<span>I Thought About You</span>
 	</button>
 
-	<div class="text-sm text-slate-600 dark:text-slate-300">
-		{ambitiousThoughtCount}
-		{ambitiousThoughtCount === 1 ? 'person has' : 'people have'} thought about {username}
+	<div class="text-sm text-slate-600 dark:text-slate-200">
+		{username} has been thought about {ambitiousThoughtCount}
+		{ambitiousThoughtCount === 1 ? 'time' : 'times'}
 	</div>
 
 	{#if isLoggedIn}

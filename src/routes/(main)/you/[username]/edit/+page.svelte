@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import { Button } from '$lib/components';
 	import CountrySelect from '$lib/components/CountrySelect.svelte';
 	import Input from '$lib/components/Input.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
 	import type { PageData } from './$types';
-	import { Dialog, Label, Separator } from 'bits-ui';
 	import { X } from '@lucide/svelte';
+	import { Dialog, Label, Separator } from 'bits-ui';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	let { data }: { data: PageData } = $props();
@@ -31,6 +31,21 @@
 		}
 	});
 	let open = $state(true);
+	let deleteConfirmation = $state(false);
+	async function deleteProfile() {
+		const response = await fetch('/api/profile/delete', {
+			method: 'POST',
+			body: JSON.stringify({})
+		});
+		if (response.ok) {
+			goto(`/`, { invalidateAll: true });
+		}
+	}
+	function closeDialog(e: Event) {
+		e.preventDefault();
+		open = false;
+		goto(`/you/${page.params.username}`);
+	}
 </script>
 
 <svelte:head>
@@ -42,18 +57,10 @@
 		<Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
 		<Dialog.Content
 			onEscapeKeydown={(e) => {
-				e.preventDefault();
-				open = false;
-				setTimeout(() => {
-					goto(`/you/${page.params.username}`);
-				}, 50);
+				closeDialog(e);
 			}}
 			onInteractOutside={(e) => {
-				e.preventDefault();
-				open = false;
-				setTimeout(() => {
-					goto(`/you/${page.params.username}`);
-				}, 50);
+				closeDialog(e);
 			}}
 			class="fixed left-[50%] top-[50%] z-50 w-full max-w-[80vw] translate-x-[-50%] translate-y-[-50%] border p-5 sm:max-w-lg md:w-full rounded-lg shadow bg-inherit dark:text-white"
 		>
@@ -86,7 +93,7 @@
 				</div>
 
 				<div class="mb-4">
-					<label for="blurb" class="block mb-2 font-medium">Bio (max 200 characters)</label>
+					<label for="blurb" class="block font-medium">Bio (max 200 characters)</label>
 					<Textarea id="blurb" name="blurb" bind:value={$form.blurb} rows={4} maxlength={200} />
 					{#if $errors.blurb}
 						<p class="text-red-500 mt-1">{$errors.blurb}</p>
@@ -99,7 +106,7 @@
 					<CountrySelect
 						id="country"
 						name="country"
-						bind:value={$form.country}
+						bind:value={$form.country!}
 						class="w-full"
 						error={$errors.country ? $errors.country : undefined}
 					/>
@@ -125,6 +132,10 @@
 					</a>
 				</div>
 			</form>
+			<hr class="my-4 border-slate-800 dark:border-white" />
+			<div class="w-fit">
+				<Button colour="red" onclick={() => (deleteConfirmation = true)}>Delete Profile?</Button>
+			</div>
 			<button
 				onclick={(e) => {
 					e.preventDefault();
@@ -140,6 +151,23 @@
 					<span class="sr-only">Close</span>
 				</div>
 			</button>
+		</Dialog.Content>
+	</Dialog.Portal>
+</Dialog.Root>
+
+<Dialog.Root open={deleteConfirmation}>
+	<Dialog.Portal>
+		<Dialog.Overlay class="fixed inset-0 z-50 bg-black/80" />
+		<Dialog.Content
+			class="fixed left-[50%] top-[50%] z-50 w-full max-w-[80vw] translate-x-[-50%] translate-y-[-50%] border p-5 sm:max-w-lg md:w-full rounded-lg shadow bg-inherit dark:text-white"
+		>
+			<Dialog.Title class="text-lg font-mont">Delete Profile</Dialog.Title>
+			<Separator.Root class="bg-slate-800 dark:bg-white -mx-5 mb-6 mt-5 block h-px" />
+			<p>Are you sure you want to delete your profile? This action is irreversible.</p>
+			<div class="flex gap-4">
+				<Button colour="red" onclick={deleteProfile}>Yes, delete my profile</Button>
+				<Button onclick={() => (deleteConfirmation = false)}>Cancel</Button>
+			</div>
 		</Dialog.Content>
 	</Dialog.Portal>
 </Dialog.Root>
