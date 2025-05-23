@@ -7,6 +7,5 @@ export interface Person {
 	profile_photo_id: string;
 	blurb: string;
 	username: string;
-	social_media_handles: object;
 	birthdate: string; // 
 }

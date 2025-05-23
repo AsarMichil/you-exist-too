@@ -76,7 +76,7 @@
 		try {
 			// increment the thought count locally
 			ambitiousThoughtCount += 1;
-			// await callThoughtsApi();
+			await callThoughtsApi();
 		} catch (error) {
 			console.error('Error adding thought:', error);
 		}
@@ -192,7 +192,7 @@
 	/* Engraved text effect - ONLY the text is inset */
 	.engraved-content {
 		text-shadow:
-			0 1px 0 #f2ebe9,
+			0 1px 0 #E4CAC3,
 			1px 0 0 rgba(255, 255, 255, 0.6),
 			0 -1px 0 rgba(0, 0, 0, 0.3),
 			-1px 0 0 rgba(0, 0, 0, 0.2);

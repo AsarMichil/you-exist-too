@@ -59,7 +59,7 @@
 
 <style>
 	.candle-container {
-		height: 120px;
+		height: 100px;
 		width: 40px;
 		margin: 0 8px;
 		transition: transform 0.3s ease;
@@ -72,7 +72,7 @@
 
 	.candle-body {
 		width: 30px;
-		height: 70px;
+		height: 55px;
 		background: linear-gradient(to right, #f9f4e8, #fff8e8, #f9f4e8);
 		border-radius: 4px;
 		box-shadow: 0 0 5px rgba(117, 107, 107, 0.1);
