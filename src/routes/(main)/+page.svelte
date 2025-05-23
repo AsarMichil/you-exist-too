@@ -103,18 +103,17 @@
 						<div class="px-auto">Login</div>
 					</button>
 				{:else}
-					<button
+					<a
 						aria-label="View your profile"
-						class="border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700"
-						onclick={() => {
-							goto('/you/' + data.username);
-						}}
+						class="border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-brownish-400 active:bg-brownish-700 dark:hover:bg-brownish-400 dark:active:bg-brownish-700 dark:border-white dark:focus:border-brownish-700 outline-none focus:border-brownish-700 focus:ring-2 focus:ring-brownish-700 text-center"
+						href={`/you/${data.username}`}
+						data-sveltekit-preload-data
 					>
 						<div class="px-auto">Your Profile</div>
-					</button>
+					</a>
 					<form method="post" action="?/signout" class="w-full">
 						<button
-							class="border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-forestgreen-400 active:bg-forestgreen-700 dark:hover:bg-forestgreen-400 dark:active:bg-forestgreen-700 dark:border-white dark:focus:border-forestgreen-700 outline-none focus:border-forestgreen-700 focus:ring-2 focus:ring-forestgreen-700 text-center"
+							class="border-slate-800 border-2 rounded-md w-full py-2 px-3 hover:bg-brownish-400 active:bg-brownish-700 dark:hover:bg-brownish-400 dark:active:bg-brownish-700 dark:border-white dark:focus:border-brownish-700 outline-none focus:border-brownish-700 focus:ring-2 focus:ring-brownish-700 text-center"
 							aria-label="Sign out of your account"
 						>
 							Sign Out
