@@ -40,7 +40,6 @@ export type Database = {
           preferred_name: string | null
           profile_photo_id: string | null
           search_vector: unknown | null
-          social_media_handles: Json | null
           thoughts_thought: number
           username: string
         }
@@ -56,7 +55,6 @@ export type Database = {
           preferred_name?: string | null
           profile_photo_id?: string | null
           search_vector?: unknown | null
-          social_media_handles?: Json | null
           thoughts_thought?: number
           username: string
         }
@@ -72,8 +70,28 @@ export type Database = {
           preferred_name?: string | null
           profile_photo_id?: string | null
           search_vector?: unknown | null
-          social_media_handles?: Json | null
           thoughts_thought?: number
+          username?: string
+        }
+        Relationships: []
+      }
+      social_links: {
+        Row: {
+          id: number
+          platform: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          id?: never
+          platform: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          id?: never
+          platform?: string
+          user_id?: string
           username?: string
         }
         Relationships: []
@@ -135,7 +153,6 @@ export type Database = {
           preferred_name: string | null
           profile_photo_id: string | null
           search_vector: unknown | null
-          social_media_handles: Json | null
           thoughts_thought: number
           username: string
         }[]

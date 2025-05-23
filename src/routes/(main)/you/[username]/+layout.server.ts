@@ -23,26 +23,30 @@ export const load: LayoutServerLoad = async ({ params, locals: { safeGetSession 
 	if (person.profile_photo_id) {
 		profile_photo_uri = db.getProfilePhotoById(person.profile_photo_id) + '.jpeg';
 	}
+	// todo make this not a waterfalled query
+	const { data: socialLinksData, error: socialLinksError } = await client
+		.from('social_links')
+		.select('*')
+		.eq('user_id', person.id);
+	if (socialLinksError) {
+		console.error(socialLinksError);
+	}
 
-	console.log('params.username', params.username);
 	const { count, error: thoughtCountError } = await client
 		.from('thought')
 		.select('*', { count: 'exact', head: true })
 		.eq('about', params.username.toLowerCase());
 
-	console.log('bals', count);
-
 	if (thoughtCountError) {
 		console.error(thoughtCountError);
 	}
-
 	return {
 		props: {
 			person,
 			profile_photo_uri: profile_photo_uri,
 			own: user?.id === person.id,
-			thoughtCount: count
+			thoughtCount: count,
+			socialLinks: socialLinksData
 		}
 	};
 };
-

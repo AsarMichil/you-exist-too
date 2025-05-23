@@ -151,7 +151,7 @@
 			<h1 class="text-3xl font-mont">Results</h1>
 			{#each data.results as p}
 				<button
-					class="w-full text-left p-4 border border-slate-800 dark:border-white rounded-md mb-2 hover:bg-forestgreen-400 active:bg-forestgreen-700"
+					class="w-full text-left p-4 border border-slate-800 dark:border-white rounded-md mb-2 hover:bg-brownish-400 active:bg-brownish-700"
 					onclick={() => {
 						goto('/you/' + p.username);
 					}}

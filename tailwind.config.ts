@@ -10,6 +10,7 @@ export default {
 				current: 'currentColor',
 				brownish: {
 					100: '#F2EBE9',
+					150: '#E4CAC3',
 					200: '#D6A89C',
 					300: '#BA8273',
 					400: '#9D6050',

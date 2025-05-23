@@ -91,7 +91,7 @@ export const actions: Actions = {
 		if (!personData || personData.length === 0) {
 			return fail(404, { message: 'Person not found' });
 		}
-		let { profile_photo_id } = personData[0] as PersonWithId;
+		let { profile_photo_id } = personData[0];
 
 		if (profile_photo_id) {
 			const deleted = await db.deleteProfilePhoto(profile_photo_id, id);

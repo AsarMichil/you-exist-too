@@ -1,4 +1,4 @@
-import { db } from '$lib/server/db';
+import { client, db } from '$lib/server/db';
 import type { SupportedCountries } from '$lib/types/person';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
@@ -12,6 +12,10 @@ const profileSchema = z.object({
 	preferred_name: z.string().optional(),
 	blurb: z.string().max(200, 'Bio must be less than 200 characters').optional(),
 	country: z.string().optional()
+});
+
+const socialLinksSchema = z.object({
+	instagram: z.string()
 });
 
 export const load: PageServerLoad = async ({ parent, params, locals: { safeGetSession } }) => {
@@ -31,17 +35,35 @@ export const load: PageServerLoad = async ({ parent, params, locals: { safeGetSe
 	if (personData[0].username !== params.username) {
 		return redirect(303, `/you/${params.username}`);
 	}
+	const { data: socialLinksData, error: socialLinksError } = await client
+		.from('social_links')
+		.select('*')
+		.eq('user_id', user.id)
+		.single();
+	if (socialLinksError) {
+		console.error(socialLinksError);
+	}
 
 	const parentData = await parent();
 	const person = parentData.props?.person || {};
 	// Pre-populate the form with the user's current data
 	const form = await superValidate(person, zod(profileSchema));
+	let socialLinksForm;
+	if (socialLinksData) {
+		// transform the data to the schema
+		const transformedData = {
+			instagram: socialLinksData.username //TODO: add other platforms
+		};
+		socialLinksForm = await superValidate(transformedData, zod(socialLinksSchema));
+	} else {
+		socialLinksForm = await superValidate(zod(socialLinksSchema));
+	}
 
-	return { form };
+	return { form, socialLinksForm };
 };
 
 export const actions: Actions = {
-	default: async ({ request, params, locals: { safeGetSession } }) => {
+	update_profile: async ({ request, params, locals: { safeGetSession } }) => {
 		const { user } = await safeGetSession();
 		if (!user) {
 			return fail(401, { message: 'Unauthorized' });
@@ -71,5 +93,35 @@ export const actions: Actions = {
 			return fail(500, { form, message: 'An unexpected error occurred' });
 		}
 		return redirect(303, `/you/${params.username}`);
+	},
+	social_links: async ({ request, params, locals: { safeGetSession } }) => {
+		const { user } = await safeGetSession();
+		if (!user) {
+			return fail(401, { message: 'Unauthorized' });
+		}
+
+		const form = await superValidate(request, zod(socialLinksSchema));
+
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		try {
+			const { error } = await client.from('social_links').upsert({
+				user_id: user.id,
+				platform: 'instagram',
+				username: form.data.instagram
+			});
+
+			if (error) {
+				console.error(error);
+				return fail(500, { form, message: 'Failed to update social links' });
+			}
+
+			return redirect(303, `/you/${params.username}`);
+		} catch (error) {
+			console.error(error);
+			return fail(500, { form, message: 'An unexpected error occurred' });
+		}
 	}
 };

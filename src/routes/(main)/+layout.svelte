@@ -23,7 +23,7 @@
 <div class="min-h-screen flex flex-col mx-6 dark:text-white">
 	<div class="w-full flex justify-between mt-3 items-center mb-2">
 		<div>
-			<h1 class="font-gar text-2xl hover:text-brownish-500 dark:hover:text-brownish-300">
+			<h1 class="font-gar text-2xl hover:text-brownish-500 dark:hover:text-brownish-300 transition-colors duration-100">
 				<a href="/">You Exist.</a>
 			</h1>
 		</div>
@@ -57,7 +57,7 @@
 				<h1 class="text-xl font-gar px-2">
 					<a
 						href="/about"
-						class="hover:text-brownish-500 dark:hover:text-brownish-300 focus:outline-brownish-500 dark:focus:outline-brownish-100 focus:outline focus:rounded"
+						class="hover:text-brownish-500 dark:hover:text-brownish-300 transition-colors duration-100 focus:outline-brownish-500 dark:focus:outline-brownish-100 focus:outline focus:rounded"
 					>
 						About
 					</a>

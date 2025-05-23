@@ -27,7 +27,7 @@
 		bind:checked
 	>
 		{#snippet children({ checked, indeterminate })}
-			<div class="text-background inline-flex items-center justify-center">
+			<div class=" inline-flex items-center justify-center">
 				{#if indeterminate}
 					<Minus class="size-[15px]" />
 				{:else if checked}
@@ -39,7 +39,7 @@
 	<Label.Root
 		id="terms-label"
 		for="terms"
-		class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+		class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
 	>
 		{label}
 	</Label.Root>

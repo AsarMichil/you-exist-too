@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ProfilePhotoUpload from '$lib/components/ProfilePhotoUpload.svelte';
 	import { flagEmoji } from '$lib/icons/FlagIcon';
-	import { Pencil, X } from '@lucide/svelte';
+	import { Instagram, Pencil, X } from '@lucide/svelte';
 	import { Dialog, Separator } from 'bits-ui';
 
 	let { data, children } = $props();
@@ -35,6 +35,14 @@
 		<h2 class="font-mont">
 			{person?.blurb}
 		</h2>
+
+		{#if data.props?.socialLinks && data.props?.socialLinks[0].username}
+			<div class="flex gap-2">
+				<a href={`https://www.instagram.com/${data.props?.socialLinks[0].username}`}>
+					<Instagram class="size-8 inline self-center hover:text-brownish-600 dark:hover:text-brownish-300" />
+				</a>
+			</div>
+		{/if}
 
 		{#if isOwnProfile}
 			<div>
