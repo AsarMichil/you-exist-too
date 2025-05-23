@@ -86,8 +86,8 @@ export const actions = {
 				redirect_to: `${url.origin}?invited=true&name=${encodeURIComponent(name)}`,
 				token_hash
 			});
+			let user = locals.user;
 			if (!sendAnonymously) {
-				const user = locals.user;
 				if (user) {
 					const person = await db.getPersonById(user.id);
 					if (person.data && person.data.length > 0) {
@@ -96,9 +96,27 @@ export const actions = {
 				}
 			}
 
+			if (user) {
+				// Insert the invite into the database
+				await client
+					.from('invites')
+					.insert({
+						invitee_email: contactInfo,
+						inviter_id: user.id,
+						anonymous: sendAnonymously
+					})
+					.select();
+			}
 			// // Send the invite email
 			try {
-				await sendInviteEmail(contactInfo, name, inviteLink, url.origin, currentUsername, false);
+				await sendInviteEmail(
+					contactInfo,
+					name,
+					inviteLink,
+					url.origin,
+					currentUsername ?? undefined,
+					false
+				);
 				console.log('Invite email sent');
 			} catch (error) {
 				console.error('Error sending invite email:', error);

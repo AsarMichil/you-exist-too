@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      invites: {
+        Row: {
+          anonymous: boolean
+          id: number
+          invitee_email: string
+          inviter_id: string
+        }
+        Insert: {
+          anonymous?: boolean
+          id?: never
+          invitee_email: string
+          inviter_id: string
+        }
+        Update: {
+          anonymous?: boolean
+          id?: never
+          invitee_email?: string
+          inviter_id?: string
+        }
+        Relationships: []
+      }
       logs: {
         Row: {
           created_at: string
