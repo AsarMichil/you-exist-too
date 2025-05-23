@@ -36,7 +36,7 @@
 			{person?.blurb}
 		</h2>
 
-		{#if data.props?.socialLinks && data.props?.socialLinks[0].username}
+		{#if data.props?.socialLinks && data.props?.socialLinks.length > 0}
 			<div class="flex gap-2">
 				<a href={`https://www.instagram.com/${data.props?.socialLinks[0].username}`}>
 					<Instagram class="size-8 inline self-center hover:text-brownish-600 dark:hover:text-brownish-300" />
