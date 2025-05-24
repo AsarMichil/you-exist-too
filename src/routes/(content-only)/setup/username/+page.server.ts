@@ -9,9 +9,10 @@ const schema = z.object({
 		.string()
 		.min(3, { message: 'Username must be at least 3 characters' })
 		.max(30, { message: 'Username must be 30 characters or less' })
-		.regex(/^[a-z0-9_-]+$/, {
-			message: 'Username can only contain lowercase letters, numbers, hyphens, and underscores'
+		.regex(/^[a-zA-Z0-9_-]+$/, {
+			message: 'Username can only contain letters, numbers, hyphens, and underscores'
 		})
+		.transform((val) => val.toLowerCase())
 });
 
 export const load = async ({ locals }) => {

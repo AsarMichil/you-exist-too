@@ -14,18 +14,14 @@
 
 	// Reactive variable to track client-side validation status
 	const isValid = $derived(
-		$form.username && $form.username.length >= 3 && /^[a-z0-9_-]+$/.test($form.username)
+		$form.username && $form.username.length >= 3 && /^[a-zA-Z0-9_-]+$/.test($form.username)
 	);
 
 	// Define routes for navigation
 	const forwardRoute = 'password';
 </script>
 
-<SetupNavigation
-	{forwardRoute}
-	canGoBackward={false}
-	canGoForward={!!isValid}
->
+<SetupNavigation {forwardRoute} canGoBackward={false} canGoForward={!!isValid}>
 	<section class="flex flex-col w-full h-full justify-center items-center p-4">
 		<BorderedBox>
 			<h1 class="font-mont text-lg font-semibold w-full">Choose a Username</h1>
@@ -67,13 +63,6 @@
 								</li>
 								<li class={$form.username && $form.username.length <= 30 ? 'text-green-600' : ''}>
 									Maximum 30 characters
-								</li>
-								<li
-									class={$form.username && /^[a-z0-9_-]+$/.test($form.username)
-										? 'text-green-600'
-										: ''}
-								>
-									Only lowercase letters, numbers, hyphens and underscores
 								</li>
 							</ul>
 						</ExpandableContent>
